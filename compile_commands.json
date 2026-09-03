@@ -1,0 +1,242 @@
+[
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/adc.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/adc.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/dma.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/dma.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/freertos.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/freertos.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/gpio.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/gpio.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/i2c.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/i2c.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/main.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/main.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/spi.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/spi.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/stm32h7xx_hal_msp.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/stm32h7xx_hal_msp.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/stm32h7xx_hal_timebase_tim.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/stm32h7xx_hal_timebase_tim.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/stm32h7xx_it.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/stm32h7xx_it.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/system_stm32h7xx.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/system_stm32h7xx.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/tim.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/tim.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/usart.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/usart.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Core/Src/usb_otg.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Core/Src/usb_otg.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_adc.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_adc.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_adc_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_adc_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/croutine.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/event_groups.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/list.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/list.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/queue.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/queue.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/tasks.c"
+  },
+  {
+    "directory": "D:/Downloads/stm32project/mydrone_hal",
+    "file": "d:/Downloads/stm32project/mydrone_hal/Middlewares/Third_Party/FreeRTOS/Source/timers.c",
+    "command": "clang -c --target=armv7m-none-eabi -mcpu=cortex-m3 -std=gnu99 -ICore/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy -IMiddlewares/Third_Party/FreeRTOS/Source/include -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -IDrivers/CMSIS/Device/ST/STM32H7xx/Include -IDrivers/CMSIS/Include -IMDK-ARM/.cmsis/include -IMDK-ARM/RTE/_mydrone_hal -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H743xx -c -O3 -g Middlewares/Third_Party/FreeRTOS/Source/timers.c"
+  }
+]

@@ -25,6 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "semphr.h"
+#include "d:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\user_control\scheuler\scheuler.h"
+QueueHandle_t uart_tx_queue = NULL;
 
 /* USER CODE END Includes */
 
@@ -179,6 +182,8 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+    uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

@@ -3,7 +3,8 @@ name: mydrone_hal
 type: ARM
 deviceName: null
 packDir: null
-srcDirs: []
+srcDirs:
+  - user
 virtualFolder:
   name: <virtual_root>
   files: []
@@ -106,6 +107,10 @@ targets:
         - ../Drivers/CMSIS/Include
         - .cmsis/include
         - RTE/_mydrone_hal
+        - user/driver/sys
+        - user/driver/uart
+        - user/driver/ring
+        - user/driver
       libList: []
     excludeList: []
     settings:
