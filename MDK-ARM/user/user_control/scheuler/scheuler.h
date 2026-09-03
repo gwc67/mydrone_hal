@@ -12,7 +12,7 @@ enum uart_event_type_e
 
 struct uart_event_t {
     enum uart_event_type_e type_e;
-    uint8_t* data_puc;
+    uint8_t* data_ptr;
     size_t size;          
 };
 
