@@ -58,19 +58,19 @@ const osThreadAttr_t task_1ms_attributes = {
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
-/* Definitions for task_1ms_lx */
-osThreadId_t task_1ms_lxHandle;
-const osThreadAttr_t task_1ms_lx_attributes = {
-  .name = "task_1ms_lx",
-  .stack_size = 256 * 4,
+/* Definitions for task_tx_event */
+osThreadId_t task_tx_eventHandle;
+const osThreadAttr_t task_tx_event_attributes = {
+  .name = "task_tx_event",
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal1,
 };
-/* Definitions for task_user */
-osThreadId_t task_userHandle;
-const osThreadAttr_t task_user_attributes = {
-  .name = "task_user",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+/* Definitions for task_rx_event */
+osThreadId_t task_rx_eventHandle;
+const osThreadAttr_t task_rx_event_attributes = {
+  .name = "task_rx_event",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal1,
 };
 /* Definitions for task_10ms_low */
 osThreadId_t task_10ms_lowHandle;
@@ -107,8 +107,8 @@ const osThreadAttr_t task_10ms_high_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void task_1ms_fun(void *argument);
-void task_1ms_lx_fun(void *argument);
-void task_user_fun(void *argument);
+void task_tx(void *argument);
+void task_rx(void *argument);
 void task_10ms_low_fun(void *argument);
 void task_1ms_dt_fun(void *argument);
 void task_100ms_fun(void *argument);
@@ -163,11 +163,11 @@ void MX_FREERTOS_Init(void) {
   /* creation of task_1ms */
   task_1msHandle = osThreadNew(task_1ms_fun, NULL, &task_1ms_attributes);
 
-  /* creation of task_1ms_lx */
-  task_1ms_lxHandle = osThreadNew(task_1ms_lx_fun, NULL, &task_1ms_lx_attributes);
+  /* creation of task_tx_event */
+  task_tx_eventHandle = osThreadNew(task_tx, NULL, &task_tx_event_attributes);
 
-  /* creation of task_user */
-  task_userHandle = osThreadNew(task_user_fun, NULL, &task_user_attributes);
+  /* creation of task_rx_event */
+  task_rx_eventHandle = osThreadNew(task_rx, NULL, &task_rx_event_attributes);
 
   /* creation of task_10ms_low */
   task_10ms_lowHandle = osThreadNew(task_10ms_low_fun, NULL, &task_10ms_low_attributes);
@@ -211,40 +211,40 @@ __weak void task_1ms_fun(void *argument)
   /* USER CODE END task_1ms_fun */
 }
 
-/* USER CODE BEGIN Header_task_1ms_lx_fun */
+/* USER CODE BEGIN Header_task_tx */
 /**
-* @brief Function implementing the task_1ms_lx thread.
+* @brief Function implementing the task_tx_event thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_task_1ms_lx_fun */
-__weak void task_1ms_lx_fun(void *argument)
+/* USER CODE END Header_task_tx */
+__weak void task_tx(void *argument)
 {
-  /* USER CODE BEGIN task_1ms_lx_fun */
+  /* USER CODE BEGIN task_tx */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END task_1ms_lx_fun */
+  /* USER CODE END task_tx */
 }
 
-/* USER CODE BEGIN Header_task_user_fun */
+/* USER CODE BEGIN Header_task_rx */
 /**
-* @brief Function implementing the task_user thread.
+* @brief Function implementing the task_rx_event thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_task_user_fun */
-__weak void task_user_fun(void *argument)
+/* USER CODE END Header_task_rx */
+__weak void task_rx(void *argument)
 {
-  /* USER CODE BEGIN task_user_fun */
+  /* USER CODE BEGIN task_rx */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END task_user_fun */
+  /* USER CODE END task_rx */
 }
 
 /* USER CODE BEGIN Header_task_10ms_low_fun */

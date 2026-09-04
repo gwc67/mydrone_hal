@@ -41,13 +41,34 @@ int test_callback(uint8_t* data,uint32_t len32,void* user_data)
     return 0;
 }
 
-
-void task_user_fun(void *argument)
+void task_rx(void *argument)
 {
-  /* USER CODE BEGIN task_user_fun */
-  struct uart_event_t tx_event;
+    /* USER CODE BEGIN task_user_fun */
+    struct uart_event_t tx_event;
     BaseType_t ret;
-  /* Infinite loop */
+    /* Infinite loop */
+    for (;;)
+    {
+        ret = xQueueReceive(uart_rx_queue, &tx_event, portMAX_DELAY);
+        if (tx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE)
+        {
+
+            uart_rx_analyze(g_uart_computer);
+            HAL_UART_Transmit(&huart1, "data_rx\r\n", 9, HAL_MAX_DELAY);
+        }
+    }
+    /* USER CODE END task_user_fun */
+}
+
+//之后封装的话，应该是调用对应经过封装过的uart_transmit_id 了
+//那就串口发送使用一个队列，其他不需要句柄的就使用另外一个队列，通过id_e 进行区分
+
+void task_tx(void *argument)
+{
+    /* USER CODE BEGIN task_100ms_fun */
+    struct uart_event_t tx_event;
+    BaseType_t ret;
+    /* Infinite loop */
     for (;;)
     {
         ret = xQueueReceive(uart_tx_queue, &tx_event, portMAX_DELAY);
@@ -56,30 +77,7 @@ void task_user_fun(void *argument)
             uart_tx_callback(tx_event.base, tx_event.type_e);
         }
     }
-    /* USER CODE END task_user_fun */
-}
-
-
-//之后封装的话，应该是调用对应经过封装过的uart_transmit_id 了
-//那就串口发送使用一个队列，其他不需要句柄的就使用另外一个队列，通过id_e 进行区分
-void task_100ms_fun(void *argument)
-{
-
-   struct uart_event_t rx_event;
-    BaseType_t ret;
-    // static uint8_t tx_ptr[100];
-  for(;;)
-  {
-
-    ret = xQueueReceive(uart_rx_queue, &rx_event, portMAX_DELAY);
-
-    if (rx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE) {
-        
-        uart_rx_analyze(g_uart_computer);
-        HAL_UART_Transmit(&huart1,"data_rx\r\n",9,HAL_MAX_DELAY);
-    }
-  }
-  /* USER CODE END task_100ms_fun */
+    /* USER CODE END task_100ms_fun */
 }
 
 void task_10ms_low_fun(void *argument)
