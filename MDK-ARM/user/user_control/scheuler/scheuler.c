@@ -9,32 +9,6 @@
 extern QueueHandle_t uart_tx_queue ;
 extern QueueHandle_t uart_rx_queue ;
 
-
-
-void call_back_test(UART_HandleTypeDef* uart_handle,
-                                           struct uart_event_t *event,
-                                           void *user_data)
-{
-    HAL_UART_Transmit(uart_handle, "call_back", 9, HAL_MAX_DELAY);
-}
-
-
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-    if (huart == uart_get_handle(g_uart_computer)) {
-        uart_rx_isr(g_uart_computer, Size);
-    }
-}
-
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart == uart_get_handle(g_uart_computer)) {
-        uart_tx_isr(g_uart_computer);
-    }
-}
-
 int test_callback(uint8_t* data,uint32_t len32,void* user_data)
 {
     HAL_UART_Transmit(&huart1, data, len32, HAL_MAX_DELAY);
@@ -52,7 +26,6 @@ void task_rx(void *argument)
         ret = xQueueReceive(uart_rx_queue, &tx_event, portMAX_DELAY);
         if (tx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE)
         {
-
             uart_rx_analyze(g_uart_computer);
             HAL_UART_Transmit(&huart1, "data_rx\r\n", 9, HAL_MAX_DELAY);
         }
