@@ -3,19 +3,38 @@
 #define     __UART_BASE_H
 
 #include <stdint.h>
+#include "main.h"
 typedef struct uart_base_t uart_base_t ;
 
 
 typedef struct {
-   int (*uart_transmit)(uart_base_t* me,uint8_t* data_puc ,uint32_t len_ul);
-   int (*uart_rx_enable)(uart_base_t* me,uint32_t time_out_ul);                  //由于是异步的，故这个是设置多久没数据判断为空闲状态     
+   int (*uart_transmit)(uart_base_t* me,uint8_t* data ,uint32_t len32);
+   int (*uart_rx_isr)(uart_base_t* me,uint32_t len32);
+   int (*uart_rx_enable)(uart_base_t* me);                  //由于是异步的，故这个是设置多久没数据判断为空闲状态     
 }uart_ops_t;
 
 struct uart_base_t {
+   const char* name;
    const uart_ops_t* ops;
 };
 
-int uart_transmit(uart_base_t* me,uint8_t* data_puc ,uint32_t len_ul);
-int uart_receive_enable(uart_base_t* me,uint32_t time_out_ul);
+enum uart_event_type_e
+{
+    UART_EVENT_TX_REQ  = 0,
+    UART_EVENT_TX_DONE,
+    UART_EVENT_RX_DATA,
+};
 
+//使用uart_event_t 创建 TX，RX两个消息队列
+struct uart_event_t {
+    enum uart_event_type_e type_e;
+    struct uart_base_t* me;
+    uint8_t* data_ptr;
+    size_t size;          
+};
+
+
+int uart_transmit(uart_base_t* me,uint8_t* data_puc ,uint32_t len32);
+int uart_receive_enable(uart_base_t* me);
+int uart_isr(uart_base_t* me,uint32_t len32);
 #endif
