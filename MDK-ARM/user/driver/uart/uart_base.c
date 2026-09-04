@@ -56,3 +56,22 @@ int uart_rx_analyze(uart_base_t*me)
     }
     return  me->ops->uart_rx_analyze(me);
 }
+
+
+int uart_tx_callback(struct uart_base_t* me,enum uart_event_type_e event)
+{
+    CHECKIF(!me || !me->ops->uart_tx_callback)
+    {
+        return -EINVAL;
+    }
+    return  me->ops->uart_tx_callback(me,event);
+}
+
+int uart_tx_isr(struct uart_base_t *me)
+{
+    CHECKIF(!me || !me->ops->uart_tx_isr)
+    {
+        return -EINVAL;
+    }
+    return  me->ops->uart_tx_isr(me);
+}

@@ -27,6 +27,7 @@ struct uart_device_t
     UART_HandleTypeDef *uart_handle;
     struct ring_buf tx_ring;
     struct ring_buf rx_ring;
+    volatile bool is_busy_b;
     uint8_t *tx_data;                           //hal_transmit_it 使用的指针
     uint8_t *rx_data;
     uint32_t tx_len32;
