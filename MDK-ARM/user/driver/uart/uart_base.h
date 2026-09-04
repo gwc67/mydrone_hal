@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include "main.h"
+#include "usart.h"
 typedef struct uart_base_t uart_base_t ;
 
 
@@ -11,6 +12,8 @@ typedef struct {
    int (*uart_transmit)(uart_base_t* me,uint8_t* data ,uint32_t len32);
    int (*uart_rx_isr)(uart_base_t* me,uint32_t len32);
    int (*uart_rx_enable)(uart_base_t* me);                  //由于是异步的，故这个是设置多久没数据判断为空闲状态     
+   UART_HandleTypeDef* (*uart_get_handle)(uart_base_t* me);
+   int (*uart_rx_analyze)(uart_base_t*me);
 }uart_ops_t;
 
 struct uart_base_t {
@@ -28,7 +31,7 @@ enum uart_event_type_e
 //使用uart_event_t 创建 TX，RX两个消息队列
 struct uart_event_t {
     enum uart_event_type_e type_e;
-    struct uart_base_t* me;
+    struct uart_base_t* base;
     uint8_t* data_ptr;
     size_t size;          
 };
@@ -36,5 +39,7 @@ struct uart_event_t {
 
 int uart_transmit(uart_base_t* me,uint8_t* data_puc ,uint32_t len32);
 int uart_receive_enable(uart_base_t* me);
-int uart_isr(uart_base_t* me,uint32_t len32);
+int uart_rx_isr(uart_base_t* me,uint32_t len32);
+UART_HandleTypeDef* uart_get_handle(uart_base_t* me);
+
 #endif

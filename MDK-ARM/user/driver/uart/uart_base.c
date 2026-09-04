@@ -22,11 +22,20 @@ int uart_receive_enable(uart_base_t* me)
     }
     return  me->ops->uart_rx_enable(me);
 }
-int uart_isr(uart_base_t* me,uint32_t len32)
+int uart_rx_isr(uart_base_t* me,uint32_t len32)
 {
     CHECKIF(!me || !me->ops->uart_rx_isr)
     {
         return  -EINVAL;
     }
     return  me->ops->uart_rx_isr(me,len32);
+}
+
+UART_HandleTypeDef* uart_get_handle(uart_base_t* me)
+{
+    CHECKIF(!me || !me->ops->uart_get_handle)
+    {
+        return NULL;
+    }
+    return  me->ops->uart_get_handle(me);
 }

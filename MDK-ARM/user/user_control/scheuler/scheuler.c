@@ -43,8 +43,11 @@ struct ring_buf tx_test_st;
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    struct uart_base_t* me = s_uart_get_base(&huart);
-    uart_isr(me, Size);
+    // struct uart_base_t* me = s_uart_get_base(&huart);
+    // uart_rx_isr(me, Size);
+    if (huart == uart_get_handle(g_uart_computer)) {
+        uart_rx_isr(g_uart_computer, Size);
+    }
 }
 
 
@@ -69,41 +72,39 @@ void task_100ms_fun(void *argument)
 
    struct uart_event_t rx_event;
     BaseType_t ret;
-    static uint8_t tx_ptr[100];
+    // static uint8_t tx_ptr[100];
   for(;;)
   {
 
     ret = xQueueReceive(uart_rx_queue, &rx_event, portMAX_DELAY);
 
-    if (ret == pdTRUE && rx_event.type_e == UART_EVENT_TX_REQ) {
-        if (!uart_tx_is_busy) {
-            uint32_t tx_len = ring_buf_get(&tx_test_st, tx_ptr, sizeof(tx_ptr));
-            if (HAL_UART_Transmit_IT(&huart1, tx_ptr, tx_len)) {
-                uart_tx_is_busy = true;
-            }
-        }
-    }
-    else if (rx_event.type_e == UART_EVENT_TX_DONE) {
-
-        if (ring_buf_is_empty(&tx_test_st)) {
-            uart_tx_is_busy = false;
-        }
-        else {
-            
-            uint32_t tx_len = ring_buf_get(&tx_test_st, tx_ptr, 100);
-            HAL_UART_Transmit_IT(&huart1,tx_ptr,tx_len);
-        }
+    if (rx_event.type_e == UART_EVENT_RX_DATA) {
         
-        HAL_UART_Transmit(&huart1,"transmit_tx_done\r\n",18,HAL_MAX_DELAY);
-    }
-    else if (rx_event.type_e == UART_EVENT_RX_DATA) {
-        // uint8_t buffer_puc[30];
-        // uint16_t len = ring_buf_get(&rx_test_st,buffer_puc ,30);
-        // if (len > 0) {
-            HAL_UART_Transmit(&huart1,"data_rx\r\n",9,HAL_MAX_DELAY);
-        // }
+        HAL_UART_Transmit(&huart1,"data_rx\r\n",9,HAL_MAX_DELAY);
         xSemaphoreGive(test);
     }
+    // if (ret == pdTRUE && rx_event.type_e == UART_EVENT_TX_REQ) {
+    //     if (!uart_tx_is_busy) {
+    //         uint32_t tx_len = ring_buf_get(&tx_test_st, tx_ptr, sizeof(tx_ptr));
+    //         if (HAL_UART_Transmit_IT(&huart1, tx_ptr, tx_len)) {
+    //             uart_tx_is_busy = true;
+    //         }
+    //     }
+    // }
+    // else if (rx_event.type_e == UART_EVENT_TX_DONE) {
+
+    //     if (ring_buf_is_empty(&tx_test_st)) {
+    //         uart_tx_is_busy = false;
+    //     }
+    //     else {
+            
+    //         uint32_t tx_len = ring_buf_get(&tx_test_st, tx_ptr, 100);
+    //         HAL_UART_Transmit_IT(&huart1,tx_ptr,tx_len);
+    //     }
+        
+    //     HAL_UART_Transmit(&huart1,"transmit_tx_done\r\n",18,HAL_MAX_DELAY);
+    // }
+    
   }
   /* USER CODE END task_100ms_fun */
 }
