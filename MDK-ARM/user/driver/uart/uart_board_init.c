@@ -35,7 +35,7 @@ void uart_board_init(void)
         .tx_len32 = TX_LEN,
         .tx_ring_len32 = RING_TX_LEN,
         .rx_len32 = RX_LEN,
-        .tx_ring_len32 = RING_RX_LEN,
+        .rx_ring_len32 = RING_RX_LEN,
     };
     uart_it_init(&s_uart_computer, &com_cfg, "uart_computer");
     g_uart_computer = &s_uart_computer.base;

@@ -31,6 +31,8 @@ struct uart_device_t
     uint8_t *rx_data;
     uint32_t tx_len32;
     uint32_t rx_len32;
+    void* user_data;                            //user_data通过回调进一步给出,user_data即 匿名协议的base指针  //对于无协议串口只需要添加一个NULL即可
+    uart_callback_t callback;
 };
 
 int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name);

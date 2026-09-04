@@ -39,3 +39,20 @@ UART_HandleTypeDef* uart_get_handle(uart_base_t* me)
     }
     return  me->ops->uart_get_handle(me);
 }
+int uart_register_callback(uart_base_t* me,uart_callback_t callback,void* user_data)
+{
+    CHECKIF(!me || !me->ops->uart_register_callback)
+    {
+        return -EINVAL;
+    }
+    return  me->ops->uart_register_callback(me,callback,user_data);
+}
+
+int uart_rx_analyze(uart_base_t*me)
+{
+    CHECKIF(!me || !me->ops->uart_rx_analyze)
+    {
+        return -EINVAL;
+    }
+    return  me->ops->uart_rx_analyze(me);
+}

@@ -7,6 +7,7 @@
 #include "usart.h"
 typedef struct uart_base_t uart_base_t ;
 
+typedef  int (*uart_callback_t)(uint8_t* data,uint32_t len32,void* user_data);
 
 typedef struct {
    int (*uart_transmit)(uart_base_t* me,uint8_t* data ,uint32_t len32);
@@ -14,6 +15,7 @@ typedef struct {
    int (*uart_rx_enable)(uart_base_t* me);                  //由于是异步的，故这个是设置多久没数据判断为空闲状态     
    UART_HandleTypeDef* (*uart_get_handle)(uart_base_t* me);
    int (*uart_rx_analyze)(uart_base_t*me);
+   int (*uart_register_callback)(uart_base_t* me,uart_callback_t callback,void* user_data);
 }uart_ops_t;
 
 struct uart_base_t {
@@ -41,5 +43,6 @@ int uart_transmit(uart_base_t* me,uint8_t* data_puc ,uint32_t len32);
 int uart_receive_enable(uart_base_t* me);
 int uart_rx_isr(uart_base_t* me,uint32_t len32);
 UART_HandleTypeDef* uart_get_handle(uart_base_t* me);
-
+int uart_register_callback(uart_base_t* me,uart_callback_t callback,void* user_data);
+int uart_rx_analyze(uart_base_t*me);
 #endif

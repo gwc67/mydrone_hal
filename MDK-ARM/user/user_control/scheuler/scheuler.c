@@ -64,6 +64,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 
+int test_callback(uint8_t* data,uint32_t len32,void* user_data)
+{
+    HAL_UART_Transmit(&huart1, data, len32, HAL_MAX_DELAY);
+    return 0;
+}
+
 
 //之后封装的话，应该是调用对应经过封装过的uart_transmit_id 了
 //那就串口发送使用一个队列，其他不需要句柄的就使用另外一个队列，通过id_e 进行区分
@@ -78,8 +84,9 @@ void task_100ms_fun(void *argument)
 
     ret = xQueueReceive(uart_rx_queue, &rx_event, portMAX_DELAY);
 
-    if (rx_event.type_e == UART_EVENT_RX_DATA) {
+    if (rx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE) {
         
+        uart_rx_analyze(g_uart_computer);
         HAL_UART_Transmit(&huart1,"data_rx\r\n",9,HAL_MAX_DELAY);
         xSemaphoreGive(test);
     }
@@ -132,6 +139,8 @@ void task_10ms_low_fun(void *argument)
 //   ring_buf_init(&tx_test_st, sizeof(tx_ring_mem),tx_ring_mem);
 //   HAL_UARTEx_ReceiveToIdle_IT(&huart1, rx_buffer_puc, 20);
     driver_init_all();
+    uart_register_callback(g_uart_computer, test_callback,NULL);
+
   /* Infinite loop */
   for(;;)
   {

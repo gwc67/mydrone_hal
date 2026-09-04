@@ -53,13 +53,37 @@ static UART_HandleTypeDef* s_uart_get_handle(struct uart_base_t* base)
     return me->uart_handle;
 }
 
+static int s_uart_rx_analyze(uart_base_t* base)
+{
+    struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);  
 
+    if (me->callback == NULL) {
+        return -EINVAL;
+    }
 
+    uint8_t data[100];
+    
+    while (!ring_buf_is_empty(&me->rx_ring)) {
+        uint32_t len = ring_buf_get(&me->rx_ring,data,sizeof(data));
+        me->callback(data,len,me->user_data);
+    };
+    return 0;
+}    
+    
+static int s_uart_callback_register(uart_base_t* base,uart_callback_t callback,void* user_data)
+{
+    struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);  
+    me->user_data = user_data;
+    me->callback = callback;
+    return 0;
+}
 const uart_ops_t uart_ops_it = {
     .uart_rx_enable = s_uart_rx_enalbe_it,
     .uart_transmit = s_uart_tx_it,
     .uart_rx_isr = s_uart_rx_isr_it,
     .uart_get_handle = s_uart_get_handle,
+    .uart_register_callback = s_uart_callback_register,
+    .uart_rx_analyze = s_uart_rx_analyze,
 };
 
 int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
