@@ -7,6 +7,8 @@
 #include "uarts.h"
 #include "driver_registry.h"
 #include "mesc.h"
+#include "task.h"
+#include "timers.h"
 
 extern QueueHandle_t uart_tx_queue ;
 extern QueueHandle_t uart_rx_queue ;
@@ -25,6 +27,10 @@ extern SemaphoreHandle_t xevent_dispatch;
 #define SUB_MAX 32 
 #define EVT_KEY_PRESSED   ((event_id_t)100)
 #define EVT_LED_ON        ((event_id_t)200)
+#define EVT_TIMER_10MS    ((event_id_t)300)
+
+
+
 
 typedef uint16_t event_id_t;
 
@@ -117,9 +123,9 @@ static void key_pressed_event(event_id_t id,uint32_t param,void* user)
 {
   ARG_UNUSED(param);
   ARG_UNUSED(user);
-  if (id == EVT_KEY_PRESSED ) {
+  // if (id == EVT_KEY_PRESSED ) {
     HAL_UART_Transmit(&huart1, "key_pressed\r\n", 13, HAL_MAX_DELAY);
-  }
+  // }
 }
 
 
@@ -128,6 +134,7 @@ void led_module_init(void)
 {
   event_subscribe(EVT_KEY_PRESSED, led_on_event , 0);
   event_subscribe(EVT_KEY_PRESSED, key_pressed_event , 0);
+  event_subscribe(EVT_TIMER_10MS, key_pressed_event , 0);
 }
 
 void key_module_run(void)
@@ -173,6 +180,22 @@ void event_publish_sy(event_id_t id,uint32_t param)
   }
 }
 
+
+void timer_10ms_callback(TimerHandle_t xtimer)
+{
+   event_publish_ay(EVT_TIMER_10MS, 0);
+}
+
+
+void syster_timer_init(void)
+{
+  TimerHandle_t xtimer10ms = xTimerCreate("timer10ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_10ms_callback);
+
+  if (xtimer10ms != NULL) {
+    // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
+    xTimerStart(xtimer10ms, 0);
+  }
+}
 
 // ######################################################
 

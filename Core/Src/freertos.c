@@ -30,6 +30,11 @@
 QueueHandle_t uart_tx_queue = NULL;
 QueueHandle_t uart_rx_queue = NULL;
 SemaphoreHandle_t xevent_dispatch = NULL;
+
+
+extern void syster_timer_init(void);
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -186,7 +191,7 @@ void MX_FREERTOS_Init(void) {
     uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     xevent_dispatch = xSemaphoreCreateBinary();
-
+  syster_timer_init();
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
