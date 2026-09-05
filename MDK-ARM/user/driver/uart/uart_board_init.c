@@ -42,4 +42,4 @@ void uart_board_init(void)
     uart_receive_enable(g_uart_computer);
 
 }
-DRIVER_INIT(uart_board_init);
+DRIVER_INIT_1(uart_board_init);
