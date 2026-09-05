@@ -111,6 +111,7 @@ targets:
         - user/driver/uart
         - user/driver/ring
         - user/driver
+        - user/user_control/ano
       libList: []
     excludeList: []
     settings:

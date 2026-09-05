@@ -29,7 +29,7 @@
 #include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\driver\uart\uart_base.h"
 QueueHandle_t uart_tx_queue = NULL;
 QueueHandle_t uart_rx_queue = NULL;
-
+SemaphoreHandle_t xevent_dispatch = NULL;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -185,6 +185,8 @@ void MX_FREERTOS_Init(void) {
   /* add threads, ... */
     uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
+    xevent_dispatch = xSemaphoreCreateBinary();
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

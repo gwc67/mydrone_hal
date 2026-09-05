@@ -42,9 +42,7 @@ static int s_uart_tx_callback(struct uart_base_t* base,enum uart_event_type_e ev
     struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);
     if (event == UART_EVENT_TX_REQ) {
         if (!me->is_busy_b) {
-            static uint32_t len;
-            len = 0;
-             len = ring_buf_get(&me->tx_ring, me->tx_data, me->tx_len32);
+            uint32_t len = ring_buf_get(&me->tx_ring, me->tx_data, me->tx_len32);
             HAL_UART_Transmit_IT(me->uart_handle, me->tx_data, len);
             me->is_busy_b = true;
         }
