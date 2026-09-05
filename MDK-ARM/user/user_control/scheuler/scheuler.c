@@ -14,7 +14,8 @@ extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
 extern SemaphoreHandle_t  xevent_dispatch;
 extern QueueHandle_t      ano_tx_queue;
-
+extern QueueHandle_t xhighprio_queue;
+extern QueueHandle_t xlowprio_queue;
 //可以再额外搞一个定时事件队列，到对应的时间执行相应的协议TX函数，将值放到底层ring_buf里面，这个事件队列，将传递 frame_id 和 ano_device的设备
 
 //然后对于一些没有sheng'me
@@ -24,27 +25,24 @@ extern QueueHandle_t      ano_tx_queue;
 
 /////////////////////////////   以下会是测试代码                  ////////////////////////////
 
-#define  ASYNC_QUEUE_SIZE 32
+#define  HIGH_PRIO_QUEUE_SIZE 16
+#define  NORMAL_PRIO_QUEUE_SIZE 32
+
 #define SUB_MAX 32 
 #define EVT_KEY_PRESSED   ((event_id_t)100)
 #define EVT_LED_ON        ((event_id_t)200)
 #define EVT_TIMER_10MS    ((event_id_t)300)
+#define EVT_TIMER_500MS    ((event_id_t)301)
 
 
 
 
-typedef uint16_t event_id_t;
 
-struct event_t {
-  event_id_t id;
-  uint32_t param;
-};
+
+
 typedef void (*event_handler_t)(event_id_t id,uint32_t param,void *user);
-
-static struct event_t async_queue[ASYNC_QUEUE_SIZE];
-static volatile uint16_t q_head = 0;
-static volatile uint16_t q_tail = 0;
-struct sub_item_t {
+// 
+  struct sub_item_t {
   event_id_t id;
   event_handler_t handler;
   void *user;
@@ -53,58 +51,56 @@ struct sub_item_t {
 };
 
 static struct sub_item_t s_subs[SUB_MAX];
-static bool event_queue_push(event_id_t id,uint32_t param)
-{
-  uint16_t next_head = (q_head + 1) % ASYNC_QUEUE_SIZE;
-  if (next_head == q_tail) {
-    return false;
-  }
-  async_queue[q_head].id = id;
-  async_queue[q_head].param = param;
-  q_head = next_head;
 
+void event_publish_ay(event_id_t id,uint32_t param,uint8_t prior)
+{
+  struct event_t e = {.id = id,.param = param};
   BaseType_t xtaskwoken = pdFALSE;
+
+  switch (prior) {
+    case 0:
+    {
+      xQueueSendToBack(xhighprio_queue, &e, 0);
+    }
+    break;
+    case 1:
+    {
+      //这个函数有什么作用，和xqueuesend比
+      xQueueSendToBack(xlowprio_queue, &e, 0);
+    }
+  default:
+    break;
+  }
+
   xSemaphoreGiveFromISR(xevent_dispatch, &xtaskwoken);
   portYIELD_FROM_ISR(xtaskwoken);
-  return true;
 }
-
-static bool event_queue_pop(struct event_t* e)
-{
-  if (q_head == q_tail) {
-    return false;
-  }
-    *e = async_queue[q_tail];
-    q_tail = (q_tail + 1) % ASYNC_QUEUE_SIZE;
-    return true;
-}
-
-void event_publish_ay(event_id_t id,uint32_t param)
-{
-  // event_queue_push(id,param);
-  struct event_t e = {.id = id,.param = param};
-  event_queue_push(e.id, e.param);
-}
-
 
 //分发的本质就是直接在这个线程里面执行对应的handler
 //如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
 //保证这个是进行事件分配的线程，这个线程可以进一步分配事件给其他线程执行
+
+static void dispatch_event_to_handlers(struct event_t *e)
+{
+    for (uint8_t prior = 0; prior <= 254; prior++) { 
+      for (uint16_t i = 0; i < SUB_MAX; i++) {
+        if (s_subs[i].used && s_subs[i].id == e->id && s_subs[i].priority == prior)
+         {
+          s_subs[i].handler(e->id,e->param,s_subs[i].user);
+        }
+      }
+    }
+}
+
+
 void event_dispatch(void)
 {
   struct event_t e;
-  while (event_queue_pop(&e)) {
-
-    for (uint8_t prior = 0; prior <= 254; prior++) {
-        
-      for (uint16_t i = 0; i < SUB_MAX; i++) {
-        if (s_subs[i].used && s_subs[i].id == e.id && s_subs[i].priority == prior) {
-          s_subs[i].handler(e.id,e.param,s_subs[i].user);
-        }
-      }
-
-    }
-    
+  while (xQueueReceive(xhighprio_queue,&e,0 ) == pdTRUE) {
+      dispatch_event_to_handlers(&e);
+  }
+  while (xQueueReceive(xlowprio_queue,&e,0 ) == pdTRUE) {
+      dispatch_event_to_handlers(&e);
   }
 }
 
@@ -184,7 +180,6 @@ void event_subscribe(event_id_t id,event_handler_t handler,void *user,uint8_t pr
         return;
       }
   }
-  
 }
 
 
@@ -201,17 +196,23 @@ void event_publish_sy(event_id_t id,uint32_t param)
 
 void timer_10ms_callback(TimerHandle_t xtimer)
 {
-   event_publish_ay(EVT_TIMER_10MS, 0);
+   event_publish_ay(EVT_TIMER_10MS, 0,0);
 }
 
+void timer_500ms_callback(TimerHandle_t xtimer)
+{
+  event_publish_ay(EVT_TIMER_500MS, 0, 1);
+}
 
 void syster_timer_init(void)
 {
   TimerHandle_t xtimer10ms = xTimerCreate("timer10ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_10ms_callback);
+  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(500),pdTRUE,NULL,timer_500ms_callback);
 
-  if (xtimer10ms != NULL) {
+  if (xtimer10ms != NULL || xtimer500ms != NULL) {
     // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
     xTimerStart(xtimer10ms, 0);
+    xTimerStart(xtimer500ms, 0);
   }
 }
 
@@ -269,7 +270,7 @@ static void callback_1000ms_high(event_id_t id,uint32_t param,void* user)
 int test_callback(uint8_t* data,uint32_t len32,void* user_data)
 {
     HAL_UART_Transmit(&huart1, data, len32, HAL_MAX_DELAY);
-    event_publish_ay(EVT_KEY_PRESSED,0);
+    event_publish_ay(EVT_KEY_PRESSED,0,1);
     return 0;
 }
 
@@ -281,22 +282,24 @@ void task_10ms_low_fun(void *argument)
     event_bus_init();
     led_module_init();
 
-    struct ano_event_t base_1_1 = {
-      .ano_base = 1,
-      .ano_id = 1,
-    };
+    // struct ano_event_t base_1_1 = {
+    //   .ano_base = 1,
+    //   .ano_id = 1,
+    // };
 
-    struct ano_event_t base_1_2 = {
-      .ano_base = 1,
-      .ano_id = 2,
-    };
-    struct ano_event_t base_2_1 = {
-      .ano_base = 2,
-      .ano_id = 1,
-    };
-    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_1,3);
-    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_2,2);
-    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_2_1,1);
+    // struct ano_event_t base_1_2 = {
+    //   .ano_base = 1,
+    //   .ano_id = 2,
+    // };
+    // struct ano_event_t base_2_1 = {
+    //   .ano_base = 2,
+    //   .ano_id = 1,
+    // };
+    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_1,3);
+    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_2,2);
+    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_2_1,1);
+    event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
+    event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
   /* Infinite loop */
   for(;;)
   {

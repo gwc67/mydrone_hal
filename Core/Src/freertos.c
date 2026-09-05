@@ -33,6 +33,8 @@ QueueHandle_t uart_rx_queue = NULL;
 SemaphoreHandle_t xevent_dispatch = NULL;
 QueueHandle_t ano_tx_queue = NULL;
 
+QueueHandle_t xhighprio_queue;
+QueueHandle_t xlowprio_queue;
 extern void syster_timer_init(void);
 
 
@@ -193,6 +195,8 @@ void MX_FREERTOS_Init(void) {
     uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     ano_tx_queue = xQueueCreate(10,sizeof(struct ano_event_t));
     xevent_dispatch = xSemaphoreCreateBinary();
+    xhighprio_queue = xQueueCreate(10, sizeof(struct event_t));
+    xlowprio_queue = xQueueCreate(32, sizeof(struct event_t));
   syster_timer_init();
   /* USER CODE END RTOS_THREADS */
 
