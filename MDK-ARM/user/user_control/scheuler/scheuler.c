@@ -17,54 +17,10 @@ extern SemaphoreHandle_t  xevent_dispatch;
 extern QueueHandle_t      ano_tx_queue;
 extern QueueHandle_t xhighprio_queue;
 extern QueueHandle_t xlowprio_queue;
-//可以再额外搞一个定时事件队列，到对应的时间执行相应的协议TX函数，将值放到底层ring_buf里面，这个事件队列，将传递 frame_id 和 ano_device的设备
-
-//然后对于一些没有sheng'me
-
-
-
-
 /////////////////////////////   以下会是测试代码                  ////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //分发的本质就是直接在这个线程里面执行对应的handler
 //如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
 //保证这个是进行事件分配的线程，这个线程可以进一步分配事件给其他线程执行
-
-
-
-
-void event_dispatch(void)
-{
-  struct event_t e;
-  while (xQueueReceive(xhighprio_queue,&e,0 ) == pdTRUE) {
-      dispatch_event_to_handlers(&e);
-  }
-  while (xQueueReceive(xlowprio_queue,&e,0 ) == pdTRUE) {
-      dispatch_event_to_handlers(&e);
-  }
-}
-
-
-
-
-void event_bus_init(void);
-void event_subscribe(enum event_id_e id,event_handler_t handler,void *user,uint8_t priority);
-void event_publish_sy(enum event_id_e id,uint32_t param);
-
-
 // #define EVT_MENU_REFRESH  ((enum event_id_e)300)
 
 static void led_on_event(enum event_id_e id,uint32_t param,void* user)
@@ -85,9 +41,6 @@ static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
   // }
 }
 
-//可以对这个user进二次使用，这个user在一开始订阅的时候只需要将ano的协议句柄传过去，可是如何确定是哪个帧id呢？
-
-#define  UNKONW_HOWDEFINE 0
 static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
 {
   xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
@@ -106,11 +59,6 @@ void key_module_run(void)
 {
     event_publish_sy(EVT_KEY_PRESSED, 0); 
 }
-
-
-
-
-
 
 void timer_10ms_callback(TimerHandle_t xtimer)
 {
@@ -197,7 +145,6 @@ void task_10ms_low_fun(void *argument)
   /* USER CODE BEGIN task_10ms_low_fun */
     driver_init_all();
     uart_register_callback(g_uart_computer, test_callback,NULL);
-    event_bus_init();
     led_module_init();
 
     // struct ano_event_t base_1_1 = {
@@ -222,8 +169,17 @@ void task_10ms_low_fun(void *argument)
   for(;;)
   {
     //而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
-    if (xSemaphoreTake(xevent_dispatch, portMAX_DELAY) == pdTRUE) {
-        event_dispatch();
+    if (xSemaphoreTake(xevent_dispatch, portMAX_DELAY) == pdTRUE)
+    {
+        struct event_t e;
+        while (xQueueReceive(xhighprio_queue, &e, 0) == pdTRUE)
+        {
+            dispatch_event_to_handlers(&e);
+        }
+        while (xQueueReceive(xlowprio_queue, &e, 0) == pdTRUE)
+        {
+            dispatch_event_to_handlers(&e);
+        }
     }
     // key_module_run();
     // uart_transmit(g_uart_computer, "hello gwc\r\n", 11);
