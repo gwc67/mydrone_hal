@@ -112,6 +112,7 @@ targets:
         - user/driver/ring
         - user/driver
         - user/user_control/ano
+        - user/driver/event
       libList: []
     excludeList: []
     settings:

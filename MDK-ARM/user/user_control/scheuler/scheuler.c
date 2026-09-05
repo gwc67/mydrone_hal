@@ -9,6 +9,7 @@
 #include "mesc.h"
 #include "task.h"
 #include "timers.h"
+#include "event.h"
 
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
@@ -25,14 +26,6 @@ extern QueueHandle_t xlowprio_queue;
 
 /////////////////////////////   以下会是测试代码                  ////////////////////////////
 
-#define  HIGH_PRIO_QUEUE_SIZE 16
-#define  NORMAL_PRIO_QUEUE_SIZE 32
-
-#define SUB_MAX 32 
-#define EVT_KEY_PRESSED   ((event_id_t)100)
-#define EVT_LED_ON        ((event_id_t)200)
-#define EVT_TIMER_10MS    ((event_id_t)300)
-#define EVT_TIMER_500MS    ((event_id_t)301)
 
 
 
@@ -40,57 +33,17 @@ extern QueueHandle_t xlowprio_queue;
 
 
 
-typedef void (*event_handler_t)(event_id_t id,uint32_t param,void *user);
-// 
-  struct sub_item_t {
-  event_id_t id;
-  event_handler_t handler;
-  void *user;
-  uint8_t used;
-  uint8_t priority;  // 优先级，数值越小，优先级越高
-};
 
-static struct sub_item_t s_subs[SUB_MAX];
 
-void event_publish_ay(event_id_t id,uint32_t param,uint8_t prior)
-{
-  struct event_t e = {.id = id,.param = param};
-  BaseType_t xtaskwoken = pdFALSE;
 
-  switch (prior) {
-    case 0:
-    {
-      xQueueSendToBack(xhighprio_queue, &e, 0);
-    }
-    break;
-    case 1:
-    {
-      //这个函数有什么作用，和xqueuesend比
-      xQueueSendToBack(xlowprio_queue, &e, 0);
-    }
-  default:
-    break;
-  }
 
-  xSemaphoreGiveFromISR(xevent_dispatch, &xtaskwoken);
-  portYIELD_FROM_ISR(xtaskwoken);
-}
+
 
 //分发的本质就是直接在这个线程里面执行对应的handler
 //如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
 //保证这个是进行事件分配的线程，这个线程可以进一步分配事件给其他线程执行
 
-static void dispatch_event_to_handlers(struct event_t *e)
-{
-    for (uint8_t prior = 0; prior <= 254; prior++) { 
-      for (uint16_t i = 0; i < SUB_MAX; i++) {
-        if (s_subs[i].used && s_subs[i].id == e->id && s_subs[i].priority == prior)
-         {
-          s_subs[i].handler(e->id,e->param,s_subs[i].user);
-        }
-      }
-    }
-}
+
 
 
 void event_dispatch(void)
@@ -108,13 +61,13 @@ void event_dispatch(void)
 
 
 void event_bus_init(void);
-void event_subscribe(event_id_t id,event_handler_t handler,void *user,uint8_t priority);
-void event_publish_sy(event_id_t id,uint32_t param);
+void event_subscribe(enum event_id_e id,event_handler_t handler,void *user,uint8_t priority);
+void event_publish_sy(enum event_id_e id,uint32_t param);
 
 
-// #define EVT_MENU_REFRESH  ((event_id_t)300)
+// #define EVT_MENU_REFRESH  ((enum event_id_e)300)
 
-static void led_on_event(event_id_t id,uint32_t param,void* user)
+static void led_on_event(enum event_id_e id,uint32_t param,void* user)
 {
   ARG_UNUSED(param);
   ARG_UNUSED(user);
@@ -123,7 +76,7 @@ static void led_on_event(event_id_t id,uint32_t param,void* user)
   }
 }
 
-static void key_pressed_event(event_id_t id,uint32_t param,void* user)
+static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
 {
   ARG_UNUSED(param);
   ARG_UNUSED(user);
@@ -135,7 +88,7 @@ static void key_pressed_event(event_id_t id,uint32_t param,void* user)
 //可以对这个user进二次使用，这个user在一开始订阅的时候只需要将ano的协议句柄传过去，可是如何确定是哪个帧id呢？
 
 #define  UNKONW_HOWDEFINE 0
-static void ano_com_event(event_id_t id,uint32_t param,void* user)
+static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
 {
   xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
 }
@@ -156,42 +109,7 @@ void key_module_run(void)
 
 
 
-void event_bus_init(void)
-{
-  uint16_t i;
-  for (i = 0; i < SUB_MAX; i++) {
-    s_subs[i].used = 0;
-    s_subs[i].handler = 0;
-    s_subs[i].user = 0;
-  }
-}
 
-
-void event_subscribe(event_id_t id,event_handler_t handler,void *user,uint8_t priority)
-{
-  uint16_t i ;
-  for (i = 0; i < SUB_MAX; i++) {
-      if (s_subs[i].used == 0) {
-        s_subs[i].id = id;
-        s_subs[i].handler = handler;
-        s_subs[i].used = 1;
-        s_subs[i].user = user;
-        s_subs[i].priority = priority;
-        return;
-      }
-  }
-}
-
-
-void event_publish_sy(event_id_t id,uint32_t param)
-{
-  uint16_t i;
-  for (i = 0; i < SUB_MAX; i++) {
-    if ((s_subs[i].used != 0) && (s_subs[i].id == id)) {
-      s_subs[i].handler(id,param,s_subs->user);
-    }
-  }
-}
 
 
 void timer_10ms_callback(TimerHandle_t xtimer)
@@ -257,12 +175,12 @@ void task_tx(void *argument)
 }
 
 
-static void callback_500ms_low(event_id_t id,uint32_t param,void* user)
+static void callback_500ms_low(enum event_id_e id,uint32_t param,void* user)
 {
   HAL_UART_Transmit(&huart1, "500ms_low\r\n",11,HAL_MAX_DELAY);
 }
 
-static void callback_1000ms_high(event_id_t id,uint32_t param,void* user)
+static void callback_1000ms_high(enum event_id_e id,uint32_t param,void* user)
 {
   HAL_UART_Transmit(&huart1, "1000ms_high\r\n",11,HAL_MAX_DELAY);
 }

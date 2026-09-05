@@ -29,7 +29,7 @@ typedef struct {
       const driver_entry_t __driver_##fn \
           __attribute__((used, section(".dvr.b2"))) = { .init_fn = fn, .name = #fn }
 
-#define DRIVER_INIT(fn) \
+#define DRIVER_INIT_3(fn) \
     const driver_entry_t __driver_##fn \
         __attribute__((used, section(".dvr.b3"))) = { .init_fn = fn, .name = #fn }
 // ● 对于同名段（都是 .dvr.b），顺序由链接器处理目标文件的顺序决定。在 EIDE 中，这个顺序就是你 eide.yml 里 srcDirs 的排列顺序：
