@@ -13,10 +13,9 @@
 
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
-extern SemaphoreHandle_t  xevent_dispatch;
+extern SemaphoreHandle_t  dispatch_semap;
 extern QueueHandle_t      ano_tx_queue;
-extern QueueHandle_t xhighprio_queue;
-extern QueueHandle_t xlowprio_queue;
+extern QueueHandle_t event_queue[EVT_PRIO_MAX];
 /////////////////////////////   以下会是测试代码                  ////////////////////////////
 //分发的本质就是直接在这个线程里面执行对应的handler
 //如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
@@ -44,15 +43,6 @@ static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
 static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
 {
   xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
-}
-
-
-
-void led_module_init(void)
-{
-  event_subscribe(EVT_KEY_PRESSED, led_on_event , 0,10);
-  event_subscribe(EVT_KEY_PRESSED, key_pressed_event ,0, 10);
-  // event_subscribe(EVT_TIMER_10MS, key_pressed_event , 0);
 }
 
 void key_module_run(void)
@@ -145,46 +135,33 @@ void task_10ms_low_fun(void *argument)
   /* USER CODE BEGIN task_10ms_low_fun */
     driver_init_all();
     uart_register_callback(g_uart_computer, test_callback,NULL);
-    led_module_init();
-
-    // struct ano_event_t base_1_1 = {
-    //   .ano_base = 1,
-    //   .ano_id = 1,
-    // };
-
-    // struct ano_event_t base_1_2 = {
-    //   .ano_base = 1,
-    //   .ano_id = 2,
-    // };
-    // struct ano_event_t base_2_1 = {
-    //   .ano_base = 2,
-    //   .ano_id = 1,
-    // };
-    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_1,3);
-    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_2,2);
-    // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_2_1,1);
-    event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
+    event_subscribe(EVT_KEY_PRESSED, led_on_event , 0,10);
+    event_subscribe(EVT_KEY_PRESSED, key_pressed_event ,0, 10);
     event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+    event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+    event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
+    struct event_t event;
   /* Infinite loop */
-  for(;;)
-  {
-    //而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
-    if (xSemaphoreTake(xevent_dispatch, portMAX_DELAY) == pdTRUE)
+    for (;;)
     {
-        struct event_t e;
-        while (xQueueReceive(xhighprio_queue, &e, 0) == pdTRUE)
+        // 而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
+
+        if (xSemaphoreTake(dispatch_semap, portMAX_DELAY) == pdTRUE)
         {
-            dispatch_event_to_handlers(&e);
+            for (int8_t i = EVT_PRIO_MAX - 1; i >= 0; i--)
+            {
+                while (xQueueReceive(event_queue[i], &event, 0) == pdTRUE)
+                {
+                    dispatch_event(&event);
+                    xSemaphoreTake(dispatch_semap, 0);
+                }
+            }
         }
-        while (xQueueReceive(xlowprio_queue, &e, 0) == pdTRUE)
-        {
-            dispatch_event_to_handlers(&e);
-        }
+
+        // if (xQueueReceive(xhighprio_queue, &event, portMAX_DELAY)) {
+        //     dispatch_event(&event);
+        // }
     }
-    // key_module_run();
-    // uart_transmit(g_uart_computer, "hello gwc\r\n", 11);
-    // osDelay(1000);
-  }
   /* USER CODE END task_10ms_low_fun */
 }
 

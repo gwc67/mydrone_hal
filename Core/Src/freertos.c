@@ -31,11 +31,9 @@
 #include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\driver\event\event.h"
 QueueHandle_t uart_tx_queue = NULL;
 QueueHandle_t uart_rx_queue = NULL;
-SemaphoreHandle_t xevent_dispatch = NULL;
+SemaphoreHandle_t dispatch_semap = NULL;
 QueueHandle_t ano_tx_queue = NULL;
-
-QueueHandle_t xhighprio_queue;
-QueueHandle_t xlowprio_queue;
+QueueHandle_t event_queue[EVT_PRIO_MAX];
 extern void syster_timer_init(void);
 
 
@@ -195,9 +193,12 @@ void MX_FREERTOS_Init(void) {
     uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     ano_tx_queue = xQueueCreate(10,sizeof(struct ano_event_t));
-    xevent_dispatch = xSemaphoreCreateBinary();
-    xhighprio_queue = xQueueCreate(10, sizeof(struct event_t));
-    xlowprio_queue = xQueueCreate(32, sizeof(struct event_t));
+    dispatch_semap = xSemaphoreCreateBinary();
+
+  event_queue[EVT_PRIO_LOW] = xQueueCreate(10, sizeof(struct event_t));
+  event_queue[EVT_PRIO_NORMAL] = xQueueCreate(10, sizeof(struct event_t));
+  event_queue[EVT_PRIO_HIGH] = xQueueCreate(10, sizeof(struct event_t));
+    
   syster_timer_init();
   /* USER CODE END RTOS_THREADS */
 
