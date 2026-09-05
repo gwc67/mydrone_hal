@@ -3,5 +3,14 @@
 #include "stdint.h"
 #include  "main.h"
 
+struct ano_event_t
+{
+    uint16_t ano_base;
+    uint16_t ano_id;   
+};
+
+
+
+
 
 #endif

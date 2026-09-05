@@ -10,9 +10,10 @@
 #include "task.h"
 #include "timers.h"
 
-extern QueueHandle_t uart_tx_queue ;
-extern QueueHandle_t uart_rx_queue ;
-extern SemaphoreHandle_t xevent_dispatch;
+extern QueueHandle_t      uart_tx_queue ;
+extern QueueHandle_t      uart_rx_queue ;
+extern SemaphoreHandle_t  xevent_dispatch;
+extern QueueHandle_t      ano_tx_queue;
 
 //可以再额外搞一个定时事件队列，到对应的时间执行相应的协议TX函数，将值放到底层ring_buf里面，这个事件队列，将传递 frame_id 和 ano_device的设备
 
@@ -48,6 +49,7 @@ struct sub_item_t {
   event_handler_t handler;
   void *user;
   uint8_t used;
+  uint8_t priority;  // 优先级，数值越小，优先级越高
 };
 
 static struct sub_item_t s_subs[SUB_MAX];
@@ -92,11 +94,17 @@ void event_dispatch(void)
 {
   struct event_t e;
   while (event_queue_pop(&e)) {
+
+    for (uint8_t prior = 0; prior <= 254; prior++) {
+        
       for (uint16_t i = 0; i < SUB_MAX; i++) {
-        if (s_subs[i].used && s_subs[i].id == e.id) {
+        if (s_subs[i].used && s_subs[i].id == e.id && s_subs[i].priority == prior) {
           s_subs[i].handler(e.id,e.param,s_subs[i].user);
         }
       }
+
+    }
+    
   }
 }
 
@@ -104,7 +112,7 @@ void event_dispatch(void)
 
 
 void event_bus_init(void);
-void event_subscribe(event_id_t id,event_handler_t handler,void* user);
+void event_subscribe(event_id_t id,event_handler_t handler,void *user,uint8_t priority);
 void event_publish_sy(event_id_t id,uint32_t param);
 
 
@@ -128,13 +136,21 @@ static void key_pressed_event(event_id_t id,uint32_t param,void* user)
   // }
 }
 
+//可以对这个user进二次使用，这个user在一开始订阅的时候只需要将ano的协议句柄传过去，可是如何确定是哪个帧id呢？
+
+#define  UNKONW_HOWDEFINE 0
+static void ano_com_event(event_id_t id,uint32_t param,void* user)
+{
+  xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
+}
+
 
 
 void led_module_init(void)
 {
-  event_subscribe(EVT_KEY_PRESSED, led_on_event , 0);
-  event_subscribe(EVT_KEY_PRESSED, key_pressed_event , 0);
-  event_subscribe(EVT_TIMER_10MS, key_pressed_event , 0);
+  event_subscribe(EVT_KEY_PRESSED, led_on_event , 0,10);
+  event_subscribe(EVT_KEY_PRESSED, key_pressed_event ,0, 10);
+  // event_subscribe(EVT_TIMER_10MS, key_pressed_event , 0);
 }
 
 void key_module_run(void)
@@ -155,7 +171,7 @@ void event_bus_init(void)
 }
 
 
-void event_subscribe(event_id_t id,event_handler_t handler,void *user)
+void event_subscribe(event_id_t id,event_handler_t handler,void *user,uint8_t priority)
 {
   uint16_t i ;
   for (i = 0; i < SUB_MAX; i++) {
@@ -163,6 +179,8 @@ void event_subscribe(event_id_t id,event_handler_t handler,void *user)
         s_subs[i].id = id;
         s_subs[i].handler = handler;
         s_subs[i].used = 1;
+        s_subs[i].user = user;
+        s_subs[i].priority = priority;
         return;
       }
   }
@@ -202,15 +220,15 @@ void syster_timer_init(void)
 void task_rx(void *argument)
 {
     /* USER CODE BEGIN task_user_fun */
-    struct uart_event_t tx_event;
+    struct uart_event_t rx_event;
     BaseType_t ret;
     /* Infinite loop */
     for (;;)
     {
-        ret = xQueueReceive(uart_rx_queue, &tx_event, portMAX_DELAY);
-        if (tx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE)
+        ret = xQueueReceive(uart_rx_queue, &rx_event, portMAX_DELAY);
+        if (rx_event.type_e == UART_EVENT_RX_DATA && ret == pdTRUE)
         {
-            uart_rx_analyze(g_uart_computer);
+            uart_rx_analyze(rx_event.base);
             HAL_UART_Transmit(&huart1, "data_rx\r\n", 9, HAL_MAX_DELAY);
         }
     }
@@ -238,7 +256,15 @@ void task_tx(void *argument)
 }
 
 
+static void callback_500ms_low(event_id_t id,uint32_t param,void* user)
+{
+  HAL_UART_Transmit(&huart1, "500ms_low\r\n",11,HAL_MAX_DELAY);
+}
 
+static void callback_1000ms_high(event_id_t id,uint32_t param,void* user)
+{
+  HAL_UART_Transmit(&huart1, "1000ms_high\r\n",11,HAL_MAX_DELAY);
+}
 
 int test_callback(uint8_t* data,uint32_t len32,void* user_data)
 {
@@ -254,9 +280,27 @@ void task_10ms_low_fun(void *argument)
     uart_register_callback(g_uart_computer, test_callback,NULL);
     event_bus_init();
     led_module_init();
+
+    struct ano_event_t base_1_1 = {
+      .ano_base = 1,
+      .ano_id = 1,
+    };
+
+    struct ano_event_t base_1_2 = {
+      .ano_base = 1,
+      .ano_id = 2,
+    };
+    struct ano_event_t base_2_1 = {
+      .ano_base = 2,
+      .ano_id = 1,
+    };
+    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_1,3);
+    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_1_2,2);
+    event_subscribe(EVT_TIMER_10MS,ano_com_event,&base_2_1,1);
   /* Infinite loop */
   for(;;)
   {
+    //而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
     if (xSemaphoreTake(xevent_dispatch, portMAX_DELAY) == pdTRUE) {
         event_dispatch();
     }
@@ -265,4 +309,26 @@ void task_10ms_low_fun(void *argument)
     // osDelay(1000);
   }
   /* USER CODE END task_10ms_low_fun */
+}
+
+
+void ano_callback(uint16_t base , uint16_t frame)
+{
+
+  uint8_t ano_device[2] = {base,frame};
+  HAL_UART_Transmit(&huart1, ano_device, 2,HAL_MAX_DELAY);
+}
+
+
+void task_10ms_high_fun(void *argument)
+{
+  /* USER CODE BEGIN task_10ms_high_fun */
+  struct ano_event_t event;
+  /* Infinite loop */
+  for(;;)
+  {
+    xQueueReceive(ano_tx_queue, &event, portMAX_DELAY);
+    ano_callback(event.ano_base,event.ano_id);
+  }
+  /* USER CODE END task_10ms_high_fun */
 }

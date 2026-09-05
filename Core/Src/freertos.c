@@ -27,10 +27,11 @@
 /* USER CODE BEGIN Includes */
 #include "semphr.h"
 #include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\driver\uart\uart_base.h"
+#include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\user_control\scheuler\scheuler.h"
 QueueHandle_t uart_tx_queue = NULL;
 QueueHandle_t uart_rx_queue = NULL;
 SemaphoreHandle_t xevent_dispatch = NULL;
-
+QueueHandle_t ano_tx_queue = NULL;
 
 extern void syster_timer_init(void);
 
@@ -190,6 +191,7 @@ void MX_FREERTOS_Init(void) {
   /* add threads, ... */
     uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
     uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
+    ano_tx_queue = xQueueCreate(10,sizeof(struct ano_event_t));
     xevent_dispatch = xSemaphoreCreateBinary();
   syster_timer_init();
   /* USER CODE END RTOS_THREADS */
