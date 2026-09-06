@@ -40,22 +40,19 @@ static int s_uart_tx_isr_it(struct uart_base_t *base)
 static int s_uart_tx_callback(struct uart_base_t* base,enum uart_event_type_e event)
 {
     struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);
-    if (event == UART_EVENT_TX_REQ) {
-        if (!me->is_busy_b) {
-            uint32_t len = ring_buf_get(&me->tx_ring, me->tx_data, me->tx_len32);
-            HAL_UART_Transmit_IT(me->uart_handle, me->tx_data, len);
-            me->is_busy_b = true;
-        }
+
+    // 需要启动发送的条件：
+    // 1. 收到 TX_REQ 且当前不忙
+    // 2. 收到 TX_DONE 且发送缓冲区非空（继续发送下一段数据）
+    if ((event == UART_EVENT_TX_REQ && !me->is_busy_b) ||
+        (event == UART_EVENT_TX_DONE && !ring_buf_is_empty(&me->tx_ring))) {
+        uint32_t len = ring_buf_get(&me->tx_ring, me->tx_data, me->tx_len32);
+        HAL_UART_Transmit_IT(me->uart_handle, me->tx_data, len);
+        me->is_busy_b = true;
     }
+    // TX_DONE 且缓冲区为空：表示所有数据发送完毕，清除忙标志
     else if (event == UART_EVENT_TX_DONE) {
-        if (ring_buf_is_empty(&me->tx_ring)) {
-            me->is_busy_b = false;
-        }
-        else {
-            uint32_t len = ring_buf_get(&me->tx_ring, me->tx_data, me->tx_len32);
-            HAL_UART_Transmit_IT(me->uart_handle, me->tx_data, len);
-            me->is_busy_b = true;
-        }
+        me->is_busy_b = false;
     }
     return 0;
 }

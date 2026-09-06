@@ -35,10 +35,6 @@ typedef struct
     int (*ck_back_check)(ano_base_t*me);
     int (*ano_check_data)(ano_base_t*me);
     int (*clear_wait)(ano_base_t* me);
-    // int (*send_string)(ano_base_t *me, int32_t lValue, char *pcstr);
-    // int (*ano_check_data)(ano_base_t *me,stUartBase* pstbase_uart);
-    // int (*ano_printf)(ano_base_t *me, ano_printf_color_em color_em, const char *fmt, va_list ap);
-    // int8_t_t (*wait_ck_get_c)(ano_base_t* me);
 }ano_ops_t;
 
 struct ano_base_t
