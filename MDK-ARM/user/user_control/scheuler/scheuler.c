@@ -27,28 +27,24 @@ extern QueueHandle_t event_queue[EVT_PRIO_MAX];
 
 
 
-static void led_on_event(enum event_id_e id,uint32_t param,void* user)
-{
-  ARG_UNUSED(param);
-  ARG_UNUSED(user);
-  if (id == EVT_KEY_PRESSED) {
-    HAL_UART_Transmit(&huart1, "led_on\r\n", 8, HAL_MAX_DELAY);
-  }
-}
+// static void led_on_event(enum event_id_e id,uint32_t param,void* user)
+// {
+//   ARG_UNUSED(param);
+//   ARG_UNUSED(user);
+//   if (id == EVT_KEY_PRESSED) {
+//     HAL_UART_Transmit(&huart1, "led_on\r\n", 8, HAL_MAX_DELAY);
+//   }
+// }
 
-static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
-{
-  ARG_UNUSED(param);
-  ARG_UNUSED(user);
-  // if (id == EVT_KEY_PRESSED ) {
-    HAL_UART_Transmit(&huart1, "key_pressed\r\n", 13, HAL_MAX_DELAY);
-  // }
-}
+// static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
+// {
+//   ARG_UNUSED(param);
+//   ARG_UNUSED(user);
+//   // if (id == EVT_KEY_PRESSED ) {
+//     HAL_UART_Transmit(&huart1, "key_pressed\r\n", 13, HAL_MAX_DELAY);
+//   // }
+// }
 
-static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
-{
-  xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
-}
 
 void key_module_run(void)
 {
@@ -57,7 +53,7 @@ void key_module_run(void)
 
 void timer_10ms_callback(TimerHandle_t xtimer)
 {
-  struct event_t evt = { .id = EVT_NONE,
+  struct event_t evt = { .id = EVT_TIMER_10MS,
   .prio = EVT_PRIO_LOW};
    pq_push(g_EventQueue,&evt,0);
    
@@ -67,19 +63,7 @@ void timer_500ms_callback(TimerHandle_t xtimer)
 {
     struct event_t evt = {.id =EVT_TIMER_500MS,
   .prio = EVT_PRIO_LOW, };
-
-  vTaskSuspend(task_10ms_highHandle); // 需要你保存 task_10ms_high_fun 的句柄
-  
-  
-  for(int i = 0; i < 3; i++) {
-        pq_push(g_EventQueue, &evt, 0);
-  }
-  evt.id = EVT_TIMER_10MS;
-  evt.prio = EVT_PRIO_HIGH;
   pq_push(g_EventQueue,&evt,0);
-  vTaskResume(task_10ms_highHandle);
-
-  // event_publish_ay(EVT_TIMER_500MS, 0, 1);
 }
 
 void syster_timer_init(void)
@@ -135,15 +119,15 @@ void task_tx(void *argument)
 }
 
 
-static void callback_500ms_low(enum event_id_e id,uint32_t param,void* user)
-{
-  HAL_UART_Transmit(&huart1, "500ms_low\r\n",11,HAL_MAX_DELAY);
-}
+// static void callback_500ms_low(enum event_id_e id,uint32_t param,void* user)
+// {
+//   HAL_UART_Transmit(&huart1, "500ms_low\r\n",11,HAL_MAX_DELAY);
+// }
 
-static void callback_1000ms_high(enum event_id_e id,uint32_t param,void* user)
-{
-  HAL_UART_Transmit(&huart1, "1000ms_high\r\n",13,HAL_MAX_DELAY);
-}
+// static void callback_1000ms_high(enum event_id_e id,uint32_t param,void* user)
+// {
+//   HAL_UART_Transmit(&huart1, "1000ms_high\r\n",13,HAL_MAX_DELAY);
+// }
 
 int test_callback(uint8_t* data,uint32_t len32,void* user_data)
 {
@@ -197,28 +181,48 @@ void ano_callback(uint16_t base , uint16_t frame)
   HAL_UART_Transmit(&huart1, ano_device, 2,HAL_MAX_DELAY);
 }
 
+
+
+static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
+{
+  xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
+}
+
+
+
 void task_10ms_low_fun(void *argument)
 {
     struct ano_event_t ano_event;
     for (;;)
     {
-        while (xQueueReceive(ano_tx_queue,&ano_event, 0) == pdTRUE)
-        {
-           // ano_send_data(ano_event.base,ano_event.id);
-           
-        }
+        xQueueReceive(ano_tx_queue, &ano_event, portMAX_DELAY);
+            // ano_send_data(ano_event.base,ano_event.id);
+        uint8_t data[2] = {ano_event.ano_base, ano_event.ano_id};
+        HAL_UART_Transmit(&huart1, data, 2, HAL_MAX_DELAY);
     }
 }
 
+
+
+
+//这个队列内部应该是有 *号解引用指针的，将数据copy进队列里面
 void task_event(void *argument)
 {
   /* USER CODE BEGIN task_10ms_high_fun */
   // struct ano_event_t event;
   driver_init_all();
   uart_register_callback(g_uart_computer, test_callback,NULL);
-  event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
-  event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
-  event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
+  
+  struct ano_event_t base1_1 = {.ano_id = 1,.ano_base = 1};
+  struct ano_event_t base2_2 = {.ano_base = 2,.ano_id = 2};
+  struct ano_event_t base2_3 = {.ano_base = 2,.ano_id = 3};
+
+  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_3,3);
+  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_2,2);
+  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base1_1,1);
+  // event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+  // event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+  // event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
   g_EventQueue = pq_create();
   struct event_t receiveEvent;
   /* Infinite loop */

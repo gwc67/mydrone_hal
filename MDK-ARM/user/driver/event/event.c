@@ -74,7 +74,7 @@ void dispatch_event(struct event_t *e)
         {
             if (s_subs[i].used && s_subs[i].id == e->id && s_subs[i].priority == prior)
             {
-                s_subs[i].handler(e->id, e->param, s_subs->user);
+                s_subs[i].handler(e->id, e->param, s_subs[i].user);
             }
         }
     }
