@@ -10,7 +10,10 @@
 #include "task.h"
 #include "timers.h"
 #include "event.h"
+#include "double_tree.h"
 
+PrioQueue_t *g_EventQueue;
+extern osThreadId_t task_10ms_highHandle;
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
 extern SemaphoreHandle_t  dispatch_semap;
@@ -21,6 +24,8 @@ extern QueueHandle_t event_queue[EVT_PRIO_MAX];
 //如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
 //保证这个是进行事件分配的线程，这个线程可以进一步分配事件给其他线程执行
 // #define EVT_MENU_REFRESH  ((enum event_id_e)300)
+
+
 
 static void led_on_event(enum event_id_e id,uint32_t param,void* user)
 {
@@ -52,18 +57,35 @@ void key_module_run(void)
 
 void timer_10ms_callback(TimerHandle_t xtimer)
 {
-   event_publish_ay(EVT_TIMER_10MS, 0,0);
+  struct event_t evt = { .id = EVT_NONE,
+  .prio = EVT_PRIO_LOW};
+   pq_push(g_EventQueue,&evt,0);
+   
 }
 
 void timer_500ms_callback(TimerHandle_t xtimer)
 {
-  event_publish_ay(EVT_TIMER_500MS, 0, 1);
+    struct event_t evt = {.id =EVT_TIMER_500MS,
+  .prio = EVT_PRIO_LOW, };
+
+  vTaskSuspend(task_10ms_highHandle); // 需要你保存 task_10ms_high_fun 的句柄
+  
+  
+  for(int i = 0; i < 3; i++) {
+        pq_push(g_EventQueue, &evt, 0);
+  }
+  evt.id = EVT_TIMER_10MS;
+  evt.prio = EVT_PRIO_HIGH;
+  pq_push(g_EventQueue,&evt,0);
+  vTaskResume(task_10ms_highHandle);
+
+  // event_publish_ay(EVT_TIMER_500MS, 0, 1);
 }
 
 void syster_timer_init(void)
 {
   TimerHandle_t xtimer10ms = xTimerCreate("timer10ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_10ms_callback);
-  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(500),pdTRUE,NULL,timer_500ms_callback);
+  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_500ms_callback);
 
   if (xtimer10ms != NULL || xtimer500ms != NULL) {
     // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
@@ -120,7 +142,7 @@ static void callback_500ms_low(enum event_id_e id,uint32_t param,void* user)
 
 static void callback_1000ms_high(enum event_id_e id,uint32_t param,void* user)
 {
-  HAL_UART_Transmit(&huart1, "1000ms_high\r\n",11,HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart1, "1000ms_high\r\n",13,HAL_MAX_DELAY);
 }
 
 int test_callback(uint8_t* data,uint32_t len32,void* user_data)
@@ -130,40 +152,42 @@ int test_callback(uint8_t* data,uint32_t len32,void* user_data)
     return 0;
 }
 
-void task_10ms_low_fun(void *argument)
-{
-  /* USER CODE BEGIN task_10ms_low_fun */
-    driver_init_all();
-    uart_register_callback(g_uart_computer, test_callback,NULL);
-    event_subscribe(EVT_KEY_PRESSED, led_on_event , 0,10);
-    event_subscribe(EVT_KEY_PRESSED, key_pressed_event ,0, 10);
-    event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
-    event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
-    event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
-    struct event_t event;
-  /* Infinite loop */
-    for (;;)
-    {
-        // 而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
+// void task_10ms_low_fun(void *argument)
+// {
+//   /* USER CODE BEGIN task_10ms_low_fun */
+//     driver_init_all();
+//     uart_register_callback(g_uart_computer, test_callback,NULL);
+//     event_subscribe(EVT_KEY_PRESSED, led_on_event , 0,10);
+//     event_subscribe(EVT_KEY_PRESSED, key_pressed_event ,0, 10);
+//     event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+//     event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+//     event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
 
-        if (xSemaphoreTake(dispatch_semap, portMAX_DELAY) == pdTRUE)
-        {
-            for (int8_t i = EVT_PRIO_MAX - 1; i >= 0; i--)
-            {
-                while (xQueueReceive(event_queue[i], &event, 0) == pdTRUE)
-                {
-                    dispatch_event(&event);
-                    xSemaphoreTake(dispatch_semap, 0);
-                }
-            }
-        }
+    
+//     struct event_t event;
+//   /* Infinite loop */
+//     for (;;)
+//     {
+//         // 而且使用信号量的话，不是每触发一次就会事件就会进行吗？不当前只是测试，之后对于事件肯定是要
 
-        // if (xQueueReceive(xhighprio_queue, &event, portMAX_DELAY)) {
-        //     dispatch_event(&event);
-        // }
-    }
-  /* USER CODE END task_10ms_low_fun */
-}
+//         if (xSemaphoreTake(dispatch_semap, portMAX_DELAY) == pdTRUE)
+//         {
+//             for (int8_t i = EVT_PRIO_MAX - 1; i >= 0; i--)
+//             {
+//                 while (xQueueReceive(event_queue[i], &event, 0) == pdTRUE)
+//                 {
+//                     dispatch_event(&event);
+//                     xSemaphoreTake(dispatch_semap, 0);
+//                 }
+//             }
+//         }
+
+//         // if (xQueueReceive(xhighprio_queue, &event, portMAX_DELAY)) {
+//         //     dispatch_event(&event);
+//         // }
+//     }
+//   /* USER CODE END task_10ms_low_fun */
+// }
 
 
 void ano_callback(uint16_t base , uint16_t frame)
@@ -173,16 +197,36 @@ void ano_callback(uint16_t base , uint16_t frame)
   HAL_UART_Transmit(&huart1, ano_device, 2,HAL_MAX_DELAY);
 }
 
+void task_10ms_low_fun(void *argument)
+{
+    struct ano_event_t ano_event;
+    for (;;)
+    {
+        while (xQueueReceive(ano_tx_queue,&ano_event, 0) == pdTRUE)
+        {
+           // ano_send_data(ano_event.base,ano_event.id);
+           
+        }
+    }
+}
 
-void task_10ms_high_fun(void *argument)
+void task_event(void *argument)
 {
   /* USER CODE BEGIN task_10ms_high_fun */
-  struct ano_event_t event;
+  // struct ano_event_t event;
+  driver_init_all();
+  uart_register_callback(g_uart_computer, test_callback,NULL);
+  event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+  event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
+  event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
+  g_EventQueue = pq_create();
+  struct event_t receiveEvent;
   /* Infinite loop */
   for(;;)
   {
-    xQueueReceive(ano_tx_queue, &event, portMAX_DELAY);
-    ano_callback(event.ano_base,event.ano_id);
+    if (pq_pop(g_EventQueue, &receiveEvent, portMAX_DELAY)) {
+      dispatch_event(&receiveEvent);
+    }
   }
   /* USER CODE END task_10ms_high_fun */
 }

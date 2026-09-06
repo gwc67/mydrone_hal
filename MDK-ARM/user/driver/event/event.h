@@ -28,7 +28,9 @@ enum event_prio_e
 
 struct event_t {
   enum event_id_e id;
+  enum event_prio_e prio;
   uint32_t param;
+  uint32_t seq;
 };
 
 

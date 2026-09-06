@@ -119,7 +119,7 @@ void task_rx(void *argument);
 void task_10ms_low_fun(void *argument);
 void task_1ms_dt_fun(void *argument);
 void task_100ms_fun(void *argument);
-void task_10ms_high_fun(void *argument);
+void task_event(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -186,7 +186,7 @@ void MX_FREERTOS_Init(void) {
   task_100msHandle = osThreadNew(task_100ms_fun, NULL, &task_100ms_attributes);
 
   /* creation of task_10ms_high */
-  task_10ms_highHandle = osThreadNew(task_10ms_high_fun, NULL, &task_10ms_high_attributes);
+  task_10ms_highHandle = osThreadNew(task_event, NULL, &task_10ms_high_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -323,7 +323,7 @@ __weak void task_100ms_fun(void *argument)
 * @retval None
 */
 /* USER CODE END Header_task_10ms_high_fun */
-__weak void task_10ms_high_fun(void *argument)
+__weak void task_event(void *argument)
 {
   /* USER CODE BEGIN task_10ms_high_fun */
   /* Infinite loop */

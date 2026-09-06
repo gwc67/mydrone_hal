@@ -113,6 +113,7 @@ targets:
         - user/driver
         - user/user_control/ano
         - user/driver/event
+        - user/driver/double_tree
       libList: []
     excludeList: []
     settings:
