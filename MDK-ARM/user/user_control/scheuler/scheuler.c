@@ -23,7 +23,7 @@ void key_module_run(void)
     event_publish_sy(EVT_KEY_PRESSED, 0); 
 }
 
-void timer_10ms_callback(TimerHandle_t xtimer)
+void timer_1000ms_callback(TimerHandle_t xtimer)
 {
   struct event_t evt = { .id = EVT_TIMER_10MS,
   .prio = EVT_PRIO_LOW};
@@ -40,12 +40,12 @@ void timer_500ms_callback(TimerHandle_t xtimer)
 
 void syster_timer_init(void)
 {
-  TimerHandle_t xtimer10ms = xTimerCreate("timer10ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_10ms_callback);
+  TimerHandle_t xtimer1000ms = xTimerCreate("timer1000ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_1000ms_callback);
   TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_500ms_callback);
 
-  if (xtimer10ms != NULL || xtimer500ms != NULL) {
+  if (xtimer1000ms != NULL || xtimer500ms != NULL) {
     // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
-    xTimerStart(xtimer10ms, 0);
+    xTimerStart(xtimer1000ms, 0);
     xTimerStart(xtimer500ms, 0);
   }
 }

@@ -1,12 +1,11 @@
 #include "ano_device_com.h"
+#include "ano.h"
 #include "uarts.h"
 #include "driver_registry.h"
 
 static void s_ano_device_com_init(void)
 {
-    // ano_set_send_id(g_com_ano_pst, 0x00, 0);
-    // ano_set_send_id(g_com_ano_pst, 0x01, 20);
-    // ano_set_send_id(g_com_ano_pst, SIMULINK_DATA_TX, 10);
+    ano_set_send_id(g_com_ano, 0x01,EVT_TIMER_1000MS,1);
 }
 DRIVER_INIT_3(s_ano_device_com_init);
 
@@ -34,6 +33,7 @@ void com_receive_anl(uint8_t* data,uint8_t len8)
         // if (snap.id_uc == *(data + 4) && snap.sc_uc == *(data + 5) && snap.ac_uc == *(data + 6)) {
             // ano_clear_wait(g_com_ano_pst);
         // }
+        // data
     }
     else if (*(data + 2) == 0xe0)
     {
@@ -62,6 +62,7 @@ void com_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
             // ano_get_check_back(g_com_ano_pst, &snap);
             // memcpy(data + *cnt_puc, &snap, sizeof(snap));
             // *cnt_puc += sizeof(snap);
+            data[(*cnt_ptr)++] = 0x01;
         }
         break;
         case 0x01:
