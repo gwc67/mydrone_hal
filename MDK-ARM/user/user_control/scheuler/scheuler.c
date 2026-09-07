@@ -73,10 +73,7 @@ void task_timer_event(void *argument)
         evt.prio = EVT_PRIO_LOW;
         pq_push(g_EventQueue, &evt, portMAX_DELAY);
       }
-
-
     }
-    osDelay(1);
   }
 
 }
