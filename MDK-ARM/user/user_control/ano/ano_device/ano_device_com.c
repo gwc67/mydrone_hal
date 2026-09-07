@@ -5,6 +5,7 @@
 
 static void s_ano_device_com_init(void)
 {
+    ano_set_send_id(g_com_ano, 0x02,EVT_TIMER_1000MS,2);
     ano_set_send_id(g_com_ano, 0x01,EVT_TIMER_1000MS,1);
 }
 DRIVER_INIT_3(s_ano_device_com_init);

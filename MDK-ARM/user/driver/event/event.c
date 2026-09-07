@@ -62,7 +62,7 @@ void event_publish_sy(enum event_id_e id,uint32_t param)
   }
 }
 
-
+//prio 越小先执行
 void dispatch_event(struct event_t *e)
 {
     for (int16_t prior = 0; prior < SUB_PRIO_MAX; prior++)

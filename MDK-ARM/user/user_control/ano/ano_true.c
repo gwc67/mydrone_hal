@@ -117,6 +117,8 @@ static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e e
 {
 
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
+    me->frame_pst->ano_event_pst[frame].me = base;
+    me->frame_pst->ano_event_pst[frame].frame = frame;
     event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
     return 0;
 }

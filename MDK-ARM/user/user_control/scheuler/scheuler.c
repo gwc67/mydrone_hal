@@ -25,7 +25,7 @@ void key_module_run(void)
 
 void timer_1000ms_callback(TimerHandle_t xtimer)
 {
-  struct event_t evt = { .id = EVT_TIMER_10MS,
+  struct event_t evt = { .id = EVT_TIMER_1000MS,
   .prio = EVT_PRIO_LOW};
    pq_push(g_EventQueue,&evt,0);
    
