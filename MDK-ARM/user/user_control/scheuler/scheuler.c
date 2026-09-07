@@ -11,7 +11,7 @@
 #include "timers.h"
 #include "event.h"
 #include "double_tree.h"
-
+#include "ano_base.h"
 PrioQueue_t *g_EventQueue;
 extern osThreadId_t task_10ms_highHandle;
 extern QueueHandle_t      uart_tx_queue ;
@@ -197,8 +197,8 @@ void task_10ms_low_fun(void *argument)
     {
         xQueueReceive(ano_tx_queue, &ano_event, portMAX_DELAY);
             // ano_send_data(ano_event.base,ano_event.id);
-        uint8_t data[2] = {ano_event.ano_base, ano_event.ano_id};
-        HAL_UART_Transmit(&huart1, data, 2, HAL_MAX_DELAY);
+        // uint8_t data[2] = {ano_event.ano_base, ano_event.ano_id};
+        // HAL_UART_Transmit(&huart1, data, 2, HAL_MAX_DELAY);
     }
 }
 
@@ -213,13 +213,13 @@ void task_event(void *argument)
   driver_init_all();
   uart_register_callback(g_uart_computer, test_callback,NULL);
   
-  struct ano_event_t base1_1 = {.ano_id = 1,.ano_base = 1};
-  struct ano_event_t base2_2 = {.ano_base = 2,.ano_id = 2};
-  struct ano_event_t base2_3 = {.ano_base = 2,.ano_id = 3};
+  // struct ano_event_t base1_1 = {.ano_id = 1,.ano_base = 1};
+  // struct ano_event_t base2_2 = {.ano_base = 2,.ano_id = 2};
+  // struct ano_event_t base2_3 = {.ano_base = 2,.ano_id = 3};
 
-  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_3,3);
-  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_2,2);
-  event_subscribe(EVT_TIMER_10MS,ano_com_event,&base1_1,1);
+  // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_3,3);
+  // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base2_2,2);
+  // event_subscribe(EVT_TIMER_10MS,ano_com_event,&base1_1,1);
   // event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
   // event_subscribe(EVT_TIMER_500MS,callback_500ms_low,NULL,1);
   // event_subscribe(EVT_TIMER_10MS,callback_1000ms_high,NULL,1);
