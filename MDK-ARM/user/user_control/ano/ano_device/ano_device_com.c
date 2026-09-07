@@ -5,6 +5,7 @@
 
 static void s_ano_device_com_init(void)
 {
+    //默认都可以事件触发
     ano_set_send_id(g_com_ano, 0x02,EVT_TIMER_1000MS,2);
     ano_set_send_id(g_com_ano, 0x01,EVT_TIMER_1000MS,1);
 }
@@ -30,27 +31,27 @@ void com_receive_anl(uint8_t* data,uint8_t len8)
     
     if(*(data + 2) == 0x00)
     {
-        // struct ck_t snap = {0};
-        // if (snap.id_uc == *(data + 4) && snap.sc_uc == *(data + 5) && snap.ac_uc == *(data + 6)) {
+        struct ck_t snap = {0};
+        if (snap.id_uc == *(data + 4) && snap.sc_uc == *(data + 5) && snap.ac_uc == *(data + 6)) {
             // ano_clear_wait(g_com_ano_pst);
-        // }
-        // data
+        }
     }
     else if (*(data + 2) == 0xe0)
     {
-
-        // struct check_back_t check_back_st = {0};
-        // check_back_st.id_uc = *(data + 2);
-        // check_back_st.sc_uc = check_sum1;
-        // check_back_st.ac_uc = check_sum2;
-        // ano_set_check_back(g_com_ano_pst,&check_back_st);
+        struct ck_t send2check = {0};
+        send2check.id_uc = *(data + 2);
+        send2check.sc_uc = check_sum1;
+        send2check.ac_uc = check_sum2;
+        ano_set_send2check(g_com_ano,&send2check);
     }
-    // else if(*(data + 2) == SIMULINK_PID_RX)
-    // {
-    //     // gpio_pin_toggle_dt(&led0);
-    //     // BALANCE_KP = *(int32_t*)(data + 4) / 1000.0;
-    //     BALANCE_KD = *(int32_t*)(data + 12) / 1000.0;
-    // }
+    else if (*(data + 2) == 0xe1)
+    {
+        struct ck_t send2check = {0};
+        send2check.id_uc = *(data + 2);
+        send2check.sc_uc = check_sum1;
+        send2check.ac_uc = check_sum2;
+        ano_set_send2check(g_com_ano,&send2check);
+    }
 
 }
 
@@ -59,11 +60,11 @@ void com_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
     switch (frame) {
         case 0x00:
         {
-            // struct check_back_t snap = {0};
-            // ano_get_check_back(g_com_ano_pst, &snap);
-            // memcpy(data + *cnt_puc, &snap, sizeof(snap));
-            // *cnt_puc += sizeof(snap);
-            data[(*cnt_ptr)++] = 0x01;
+            struct ck_t send2check = {0};
+            ano_get_send2check(g_com_ano,&send2check);
+            data[(*cnt_ptr)++] = send2check.id_uc;
+            data[(*cnt_ptr)++] = send2check.sc_uc;
+            data[(*cnt_ptr)++] = send2check.ac_uc;
         }
         break;
         case 0x01:

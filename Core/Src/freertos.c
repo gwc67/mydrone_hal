@@ -28,12 +28,9 @@
 #include "semphr.h"
 #include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\driver\uart\uart_base.h"
 #include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\user_control\ano\ano_base.h"
-#include "D:\Downloads\stm32project\mydrone_hal\MDK-ARM\user\driver\event\event.h"
 QueueHandle_t uart_tx_queue = NULL;
 QueueHandle_t uart_rx_queue = NULL;
-SemaphoreHandle_t dispatch_semap = NULL;
 QueueHandle_t ano_tx_queue = NULL;
-QueueHandle_t event_queue[EVT_PRIO_MAX];
 extern void syster_timer_init(void);
 
 
@@ -116,7 +113,7 @@ const osThreadAttr_t task_10ms_high_attributes = {
 void task_1ms_fun(void *argument);
 void task_tx(void *argument);
 void task_rx(void *argument);
-void task_10ms_low_fun(void *argument);
+void task_ano_send(void *argument);
 void task_1ms_dt_fun(void *argument);
 void task_100ms_fun(void *argument);
 void task_event(void *argument);
@@ -177,7 +174,7 @@ void MX_FREERTOS_Init(void) {
   task_rx_eventHandle = osThreadNew(task_rx, NULL, &task_rx_event_attributes);
 
   /* creation of task_10ms_low */
-  task_10ms_lowHandle = osThreadNew(task_10ms_low_fun, NULL, &task_10ms_low_attributes);
+  task_10ms_lowHandle = osThreadNew(task_ano_send, NULL, &task_10ms_low_attributes);
 
   /* creation of task_1ms_dt */
   task_1ms_dtHandle = osThreadNew(task_1ms_dt_fun, NULL, &task_1ms_dt_attributes);
@@ -190,15 +187,9 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-    uart_tx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
-    uart_rx_queue = xQueueCreate(10, sizeof(struct uart_event_t));
-    ano_tx_queue = xQueueCreate(10,sizeof(struct ano_event_t));
-    dispatch_semap = xSemaphoreCreateBinary();
-
-  event_queue[EVT_PRIO_LOW] = xQueueCreate(10, sizeof(struct event_t));
-  event_queue[EVT_PRIO_NORMAL] = xQueueCreate(10, sizeof(struct event_t));
-  event_queue[EVT_PRIO_HIGH] = xQueueCreate(10, sizeof(struct event_t));
-    
+    uart_tx_queue = xQueueCreate(30, sizeof(struct uart_event_t));
+    uart_rx_queue = xQueueCreate(30, sizeof(struct uart_event_t));
+    ano_tx_queue = xQueueCreate(30,sizeof(struct ano_event_t));
   syster_timer_init();
   /* USER CODE END RTOS_THREADS */
 
@@ -269,7 +260,7 @@ __weak void task_rx(void *argument)
 * @retval None
 */
 /* USER CODE END Header_task_10ms_low_fun */
-__weak void task_10ms_low_fun(void *argument)
+__weak void task_ano_send(void *argument)
 {
   /* USER CODE BEGIN task_10ms_low_fun */
   /* Infinite loop */
