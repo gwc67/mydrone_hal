@@ -10,8 +10,6 @@
 enum event_id_e
 {
     EVT_NONE,
-    EVT_KEY_PRESSED = 1,
-    EVT_LED_ON,
     EVT_TIMER_10MS,
     EVT_TIMER_500MS,
     EVT_TIMER_1000MS,

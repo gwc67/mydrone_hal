@@ -16,11 +16,13 @@ PrioQueue_t *g_EventQueue;
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
 extern QueueHandle_t      ano_tx_queue;
+TaskHandle_t xTimerEventTaskHandle = NULL;
 
-void key_module_run(void)
-{
-    event_publish_sy(EVT_KEY_PRESSED, 0); 
-}
+#define NOTIFY_BIT_10MS     (1UL << 0)
+#define NOTIFY_BIT_500MS    (1UL << 1)
+#define NOTIFY_BIT_1000MS   (1UL << 2)
+
+
 
 void timer_1000ms_callback(TimerHandle_t xtimer)
 {
@@ -37,10 +39,20 @@ void timer_500ms_callback(TimerHandle_t xtimer)
   pq_push(g_EventQueue,&evt,0);
 }
 
+static void s_timer_callback(TimerHandle_t xTimer)
+{
+  uint32_t ulbitMask = (uint32_t)pvTimerGetTimerID(xTimer);
+  if (xTimerEventTaskHandle != NULL) {
+    xTaskNotify(xTimerEventTaskHandle, ulbitMask, eSetBits);
+  }
+  
+}
+
+
 void syster_timer_init(void)
 {
-  TimerHandle_t xtimer1000ms = xTimerCreate("timer1000ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_1000ms_callback);
-  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(1000),pdTRUE,NULL,timer_500ms_callback);
+  TimerHandle_t xtimer1000ms = xTimerCreate("timer1000ms",pdMS_TO_TICKS(1000),pdTRUE,(void*)NOTIFY_BIT_1000MS,s_timer_callback);
+  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(1000),pdTRUE,(void*)NOTIFY_BIT_500MS,s_timer_callback);
 
   if (xtimer1000ms != NULL || xtimer500ms != NULL) {
     // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
@@ -49,6 +61,42 @@ void syster_timer_init(void)
   }
 }
 
+//解决soft_timer下不易使用pq_push的问题
+//tasknotify 比 消息队列开销更下
+void task_timer_event(void *argument)
+{
+  struct event_t evt;
+  uint32_t NotifyValue;
+
+  xTimerEventTaskHandle = xTaskGetCurrentTaskHandle();
+
+  for(;;)
+  {
+    if (xTaskNotifyWait(0x00, 0xFFFFFFFF, &NotifyValue, portMAX_DELAY) == pdTRUE) {
+      if (NotifyValue & NOTIFY_BIT_1000MS) {
+        evt.id = EVT_TIMER_1000MS;
+        evt.prio = EVT_PRIO_HIGH;
+        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+      }
+      
+      if (NotifyValue & NOTIFY_BIT_500MS ) {
+        evt.id = EVT_TIMER_500MS;
+        evt.prio = EVT_PRIO_LOW;
+        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+      }
+      
+      if (NotifyValue & NOTIFY_BIT_10MS ) {
+        evt.id = EVT_TIMER_10MS;
+        evt.prio = EVT_PRIO_LOW;
+        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+      }
+
+
+    }
+    osDelay(1);
+  }
+
+}
 // ######################################################
 
 void task_rx(void *argument)
@@ -107,3 +155,5 @@ void task_event(void *argument)
     }
   }
 }
+
+

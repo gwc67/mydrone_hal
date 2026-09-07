@@ -114,7 +114,7 @@ void task_1ms_fun(void *argument);
 void task_tx(void *argument);
 void task_rx(void *argument);
 void task_ano_send(void *argument);
-void task_1ms_dt_fun(void *argument);
+void task_timer_event(void *argument);
 void task_100ms_fun(void *argument);
 void task_event(void *argument);
 
@@ -177,7 +177,7 @@ void MX_FREERTOS_Init(void) {
   task_10ms_lowHandle = osThreadNew(task_ano_send, NULL, &task_10ms_low_attributes);
 
   /* creation of task_1ms_dt */
-  task_1ms_dtHandle = osThreadNew(task_1ms_dt_fun, NULL, &task_1ms_dt_attributes);
+  task_1ms_dtHandle = osThreadNew(task_timer_event, NULL, &task_1ms_dt_attributes);
 
   /* creation of task_100ms */
   task_100msHandle = osThreadNew(task_100ms_fun, NULL, &task_100ms_attributes);
@@ -278,7 +278,7 @@ __weak void task_ano_send(void *argument)
 * @retval None
 */
 /* USER CODE END Header_task_1ms_dt_fun */
-__weak void task_1ms_dt_fun(void *argument)
+__weak void task_timer_event(void *argument)
 {
   /* USER CODE BEGIN task_1ms_dt_fun */
   /* Infinite loop */

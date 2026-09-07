@@ -1,6 +1,5 @@
 #include "ano_base.h"
 #include "ano_true.h"
-#include "ano_device_com.h"
 #include "uarts.h"
 #include "driver_registry.h"
 //*************************************************************************************************** */
