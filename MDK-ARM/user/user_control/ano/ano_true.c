@@ -2,7 +2,6 @@
 #include "mesc.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "event.h"
 extern QueueHandle_t      ano_tx_queue;
 
 static int s_frame_send(struct ano_base_t* base,uint8_t frame)
@@ -13,11 +12,11 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
     uint8_t tx_buffer[FRAME_MAX_LENGTH] = {0};
 
     tx_buffer[cnt++] = 0xAA;
-    tx_buffer[cnt++] = me->ano_frame_pst->frame_pst[frame].address;
+    tx_buffer[cnt++] = 0xFF;
     tx_buffer[cnt++] = frame;
     tx_buffer[cnt++] = 0;
 
-    me->ano_cfg_pst->ano_add_send_data(frame,&cnt,tx_buffer);
+    me->cfg_pst->ano_add_send_data(frame,&cnt,tx_buffer);
 
     tx_buffer[3] = cnt - 4;
     
@@ -33,13 +32,13 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
     tx_buffer[cnt++] = check_sum1;
     tx_buffer[cnt++] = check_sum2;
 
-    if (me->ano_frame_pst->check_repeat_st.wait_ck != 0 && frame == 0xe0) {
-        me->ano_frame_pst->send2check_st.id_uc = frame;
-        me->ano_frame_pst->send2check_st.sc_uc = check_sum1;
-        me->ano_frame_pst->send2check_st.ac_uc = check_sum2;
+    if (me->frame_pst->check_repeat_st.wait_ck != 0 && frame == 0xe0) {
+        me->frame_pst->send2check_st.id_uc = frame;
+        me->frame_pst->send2check_st.sc_uc = check_sum1;
+        me->frame_pst->send2check_st.ac_uc = check_sum2;
     }
 
-    me->ano_cfg_pst->ano_send_buffer(tx_buffer,cnt);
+    me->cfg_pst->ano_send_buffer(tx_buffer,cnt);
 
     return 0;
 
@@ -49,17 +48,17 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
 static int s_send_cmd(struct ano_base_t* base ,struct cmd_t* cmd_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    me->ano_frame_pst->send_cmd_st = *cmd_pst;
+    me->frame_pst->send_cmd_st = *cmd_pst;
 
     struct ano_event_t event = {.frame = 0xe0,.me = base};
     xQueueSend(ano_tx_queue, &event,0);
     return 0;
 }
 
-static int s_send2check(struct ano_base_t* base, struct check_back_t* ck_pst)
+static int s_send2check(struct ano_base_t* base, struct ck_t* ck_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    me->ano_frame_pst->send2check_st = *ck_pst;
+    me->frame_pst->send2check_st = *ck_pst;
 
 
     struct ano_event_t event = {.frame = 0x00,.me = base};
@@ -70,7 +69,7 @@ static int s_send2check(struct ano_base_t* base, struct check_back_t* ck_pst)
 static int s_set_par(struct ano_base_t* base, struct par_t* par_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    me->ano_frame_pst->par_data_st = *par_pst;
+    me->frame_pst->par_data_st = *par_pst;
     
     struct ano_event_t event = {.frame = 0xe2,.me = base};
     xQueueSend(ano_tx_queue, &event,0);
@@ -78,24 +77,24 @@ static int s_set_par(struct ano_base_t* base, struct par_t* par_pst)
 }
 
 
-static int s_get_send2check(struct ano_base_t* base , struct check_back_t* ck_pst)
+static int s_get_send2check(struct ano_base_t* base , struct ck_t* ck_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    *ck_pst = me->ano_frame_pst->send2check_st;
+    *ck_pst = me->frame_pst->send2check_st;
     return 0;
 }
 
-static int s_get_cmd(struct ano_base_t* base , struct command_t* cmd_pst)
+static int s_get_cmd(struct ano_base_t* base , struct cmd_t* cmd_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    *cmd_pst = me->ano_frame_pst->send_cmd_st;
+    *cmd_pst = me->frame_pst->send_cmd_st;
     return 0;
 }
 
 static int s_get_par(struct ano_base_t* base , struct par_t* par_pst)
 {
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    *par_pst = me->ano_frame_pst->par_data_st;
+    *par_pst = me->frame_pst->par_data_st;
     return 0;
 }
 
@@ -107,16 +106,20 @@ static int s_data_SetWts(struct ano_base_t* base,uint8_t frame)
     return 0;
 }
 
+
+//对应匿名发送，使用的是订阅机制，走的是统一订阅事件
+//匿名接受，使用的rx和tx单独的队列机制
 static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
 {
     xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
 }
 
+
 static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e event_id_e,uint8_t prio)
 {
 
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-    event_subscribe(event_id_e, s_ano_event_callback,&me->ano_frame_pst->ano_event_pst[frame],prio);
+    event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
     return 0;
 }
 
@@ -131,8 +134,13 @@ static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e e
 const ano_ops_t ano_ops_st = {
     .send_data = s_frame_send,
     .send_cmd = s_send_cmd,
-    .send_data_callback = s_data_SetWts,
+    .data_SetWts = s_data_SetWts,
     .get_send2check = s_get_send2check,
+    .get_cmd = s_get_cmd,
+    .get_par = s_get_par,
+    .set_send_id = s_set_send_id,
+    .set_send2check = s_send2check,
+    .set_par = s_set_par,
 };
 
 static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
@@ -140,70 +148,77 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
     struct ano_base_t* base =  (struct ano_base_t* )user_data;
     struct ano_device_t* me = CONTAINER_OF(base, struct ano_device_t, base);
 
-    for (uint32_t i = 0;i++; i < len32) {
-        if (me->rx_state_uc == 0 && data[i] == 0xAA)
+    for (uint32_t i = 0;i < len32;i++ ) {
+        if (me->rx_state == 0 && data[i] == 0xAA)
         {
-            me->rx_state_uc = 1;
-            me->data_cnt_uc = 0;
-            me->data_len_uc = 0;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
+            me->rx_state = 1;
+            me->data_cnt8 = 0;
+            me->data_len8 = 0;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
         }
-        else if (me->rx_state_uc == 1 && data[i] == 0xFF)
+        else if (me->rx_state == 1 && data[i] == 0xFF)
         {
-            me->rx_state_uc = 2;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
+            me->rx_state = 2;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
         }
-        else if (me->rx_state_uc == 2)
+        else if (me->rx_state == 2)
         {
-            me->rx_state_uc = 3;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
+            me->rx_state = 3;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
         }
-        else if (me->rx_state_uc == 3)
+        else if (me->rx_state == 3)
         {
-            me->rx_state_uc = 4;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
-            me->data_len_uc = data[i];
+            me->rx_state = 4;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->data_len8 = data[i];
         }
-        else if (me->rx_state_uc == 4 && me->data_len_uc > 0)
+        else if (me->rx_state == 4 && me->data_len8 > 0)
         {
-            me->data_len_uc--;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
-            if (me->data_len_uc == 0)
+            me->data_len8--;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            if (me->data_len8 == 0)
             {
-                me->rx_state_uc = 5;
+                me->rx_state = 5;
             }
         }
-        else if (me->rx_state_uc == 5)
+        else if (me->rx_state == 5)
         {
-            me->rx_state_uc = 6;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
+            me->rx_state = 6;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
         }
-        else if (me->rx_state_uc == 6)
+        else if (me->rx_state == 6)
         {
-            me->rx_state_uc = 0;
-            me->ano_cfg_pst->rx_buffer_puc[me->data_cnt_uc++] = data[i];
-            me->ano_cfg_pst->ano_receive_anl(me->ano_cfg_pst->rx_buffer_puc, me->data_cnt_uc);
+            me->rx_state = 0;
+            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->cfg_pst->ano_receive_anl(me->cfg_pst->rx_buffer, me->data_cnt8);
         }
         else
         {
-            me->rx_state_uc = 0;
+            me->rx_state = 0;
         }
     }
     return 0;
 
 }
-// int ano_device_init_noraml(struct ano_device_t* me,struct ano_frame_t* ano_frame_pst,const struct ano_cfg_t* ano_cfg_pst)
-// {
-//     if (!me || !ano_frame_pst || !ano_cfg_pst->rx_buffer_puc || !ano_cfg_pst->private_pst)
-//         return -1;
-//     me->ano_frame_pst = ano_frame_pst;
-//     me->ano_cfg_pst = ano_cfg_pst;
 
-//     me->rx_state_uc = 0;
-//     me->data_cnt_uc = 0;
-//     me->data_len_uc = 0;
-//     me->base.ops = &c_ano_normal_st;                        //绑定操作表函数
 
-//     return 0;
-// };
+
+int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,const struct ano_cfg_t* cfg_pst,const char* name)
+{
+    if (!me || !frame_pst || !cfg_pst->rx_buffer)
+    {
+        return -EINVAL;
+    }
+    me->frame_pst = frame_pst;
+    me->cfg_pst = cfg_pst;
+    me->data_cnt8 = 0;
+    me->data_len8 = 0;
+    me->rx_state = 0;
+
+    me->base.ops = &ano_ops_st;
+    me->base.name = name;
+    //注册解析函数到串口
+    uart_register_callback(me->cfg_pst->uart_base,s_ano_rx_callback,&me->base);
+    return 0;
+}
 
