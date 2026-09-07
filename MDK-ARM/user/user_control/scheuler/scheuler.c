@@ -16,28 +16,12 @@ PrioQueue_t *g_EventQueue;
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
 extern QueueHandle_t      ano_tx_queue;
+
 TaskHandle_t xTimerEventTaskHandle = NULL;
 
 #define NOTIFY_BIT_10MS     (1UL << 0)
 #define NOTIFY_BIT_500MS    (1UL << 1)
 #define NOTIFY_BIT_1000MS   (1UL << 2)
-
-
-
-void timer_1000ms_callback(TimerHandle_t xtimer)
-{
-  struct event_t evt = { .id = EVT_TIMER_1000MS,
-  .prio = EVT_PRIO_LOW};
-   pq_push(g_EventQueue,&evt,0);
-   
-}
-
-void timer_500ms_callback(TimerHandle_t xtimer)
-{
-    struct event_t evt = {.id =EVT_TIMER_500MS,
-  .prio = EVT_PRIO_LOW, };
-  pq_push(g_EventQueue,&evt,0);
-}
 
 static void s_timer_callback(TimerHandle_t xTimer)
 {
@@ -52,10 +36,9 @@ static void s_timer_callback(TimerHandle_t xTimer)
 void syster_timer_init(void)
 {
   TimerHandle_t xtimer1000ms = xTimerCreate("timer1000ms",pdMS_TO_TICKS(1000),pdTRUE,(void*)NOTIFY_BIT_1000MS,s_timer_callback);
-  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(1000),pdTRUE,(void*)NOTIFY_BIT_500MS,s_timer_callback);
+  TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(500),pdTRUE,(void*)NOTIFY_BIT_500MS,s_timer_callback);
 
   if (xtimer1000ms != NULL || xtimer500ms != NULL) {
-    // xTimerCreate("timer10ms", pdMS_TO_TICKS(10), const UBaseType_t pdTRUE, NULL, timer_10ms_callback);
     xTimerStart(xtimer1000ms, 0);
     xTimerStart(xtimer500ms, 0);
   }
