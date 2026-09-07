@@ -3,9 +3,6 @@
 #include "semphr.h"
 #include "driver_registry.h"
 
-extern QueueHandle_t event_queue[EVT_PRIO_MAX];
-extern SemaphoreHandle_t  dispatch_semap;
-
 struct sub_item_t {
     enum event_id_e id;
     event_handler_t handler;
@@ -80,19 +77,19 @@ void dispatch_event(struct event_t *e)
     }
 }
 
-void event_publish_ay(enum event_id_e id, uint32_t param, enum event_prio_e prior)
-{
-    struct event_t e = {.id = id, .param = param};
-    xQueueSend(event_queue[prior], &e, 0);
-    xSemaphoreGive(dispatch_semap);
-}
+// void event_publish_ay(enum event_id_e id, uint32_t param, enum event_prio_e prior)
+// {
+//     struct event_t e = {.id = id, .param = param};
+//     xQueueSend(event_queue[prior], &e, 0);
+//     xSemaphoreGive(dispatch_semap);
+// }
 
-void event_publish_ay_isr(enum event_id_e id,uint32_t param,enum event_prio_e prior)
-{
-    struct event_t e = {.id = id,.param = param};
-    BaseType_t xtaskwoken = pdFALSE;
-    xQueueSendToBackFromISR(event_queue[prior], &e, &xtaskwoken);
-    xSemaphoreGiveFromISR(dispatch_semap,&xtaskwoken);
-    portYIELD_FROM_ISR(xtaskwoken);
-}
+// void event_publish_ay_isr(enum event_id_e id,uint32_t param,enum event_prio_e prior)
+// {
+//     struct event_t e = {.id = id,.param = param};
+//     BaseType_t xtaskwoken = pdFALSE;
+//     xQueueSendToBackFromISR(event_queue[prior], &e, &xtaskwoken);
+//     xSemaphoreGiveFromISR(dispatch_semap,&xtaskwoken);
+//     portYIELD_FROM_ISR(xtaskwoken);
+// }
 

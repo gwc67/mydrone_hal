@@ -30,17 +30,17 @@ struct ano_event_t
 typedef struct
 {
     int (*send_cmd)(ano_base_t*me, struct cmd_t* cmd_pst);
-    int (*set_send2check)(ano_base_t*me, struct ck_t* check_back_pst);
+    int (*set_send2check)(ano_base_t*me, struct ck_t* ck_pst);
     int (*set_par)(ano_base_t*me, struct par_t* par_pst);
     int (*set_send_id)(struct ano_base_t* base,uint8_t frame,enum event_id_e event_id_e,uint8_t prio);
     int (*send_data)(ano_base_t* me, uint8_t frame); // 发送数据的函数
-    int (*data_SetWts)(struct ano_base_t* base,uint8_t frame); //触发发送数据的函数，内部为唤醒对应线程的函数
-    int (*get_send2check)(struct ano_base_t* base , struct ck_t* ck_pst);
+    int (*data_SetWts)(struct ano_base_t* me,uint8_t frame); //触发发送数据的函数，内部为唤醒对应线程的函数
+    int (*get_send2check)(struct ano_base_t* me , struct ck_t* ck_pst);
     int (*get_cmd)(ano_base_t *me,struct cmd_t* cmd_pst);
     int (*get_par)(ano_base_t *me,struct par_t* par_pst);
-    int (*ck_back_check)(ano_base_t*me);
-    int (*ano_check_data)(ano_base_t*me);
-    int (*clear_wait)(ano_base_t* me);
+    // int (*ck_back_check)(ano_base_t*me);
+    // int (*ano_check_data)(ano_base_t*me);
+    // int (*clear_wait)(ano_base_t* me);
 }ano_ops_t;
 
 struct ano_base_t
@@ -49,11 +49,18 @@ struct ano_base_t
     const ano_ops_t* ops;
 };
 
-// int ano_send_cmd(struct ano_base_t*me, struct cmd_t* cmd_pst);
-// int ano_set_ck(struct ano_base_t*me, struct ck_t* check_back_pst);
-// int ano_set_par(struct ano_base_t*me, struct par_t* par_pst);
-// int ano_set_send_id(struct ano_base_t*me,uint8_t frame_uc,uint16_t freq_us);
+int ano_send_cmd(struct ano_base_t*me, struct cmd_t* cmd_pst);
+int ano_set_send2check(struct ano_base_t*me, struct ck_t* ck_pst);
+int ano_set_par(struct ano_base_t*me, struct par_t* par_pst);
+int ano_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e event_id_e,uint8_t prio);
+int ano_send_data(ano_base_t* me, uint8_t frame);
+int ano_data_setWts(struct ano_base_t* base,uint8_t frame);
+int ano_get_send2check(struct ano_base_t* base , struct ck_t* ck_pst);
+int ano_get_cmd(ano_base_t *me,struct cmd_t* cmd_pst);
+int ano_get_par(ano_base_t *me,struct par_t* par_pst);
+
 // int ano_check_to_send(struct ano_base_t* me,uint8_t frame_uc);
+
 // int ano_set_wts(struct ano_base_t* me,uint8_t frame_uc);
 // int ano_get_check_back(struct ano_base_t *me,struct ck_t* check_back_pst);
 // int ano_get_cmd(struct ano_base_t *me,struct cmd_t* cmd_pst);

@@ -113,8 +113,6 @@ static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
 {
     xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
 }
-
-
 static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e event_id_e,uint8_t prio)
 {
 
@@ -122,15 +120,6 @@ static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e e
     event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
     return 0;
 }
-
-// static int s_clear_wait(struct ano_base_t* base)
-// {
-//     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
-//     me->ano_frame_pst->check_repeat_st.wait_ck_uc = 0;
-//     return 0;
-// }
-
-
 const ano_ops_t ano_ops_st = {
     .send_data = s_frame_send,
     .send_cmd = s_send_cmd,

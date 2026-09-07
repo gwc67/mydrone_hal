@@ -13,38 +13,10 @@
 #include "double_tree.h"
 #include "ano_base.h"
 PrioQueue_t *g_EventQueue;
-extern osThreadId_t task_10ms_highHandle;
 extern QueueHandle_t      uart_tx_queue ;
 extern QueueHandle_t      uart_rx_queue ;
 extern SemaphoreHandle_t  dispatch_semap;
 extern QueueHandle_t      ano_tx_queue;
-extern QueueHandle_t event_queue[EVT_PRIO_MAX];
-/////////////////////////////   以下会是测试代码                  ////////////////////////////
-//分发的本质就是直接在这个线程里面执行对应的handler
-//如果是要触发别的线程的话，是不是可以引入非阻塞机制呢？
-//保证这个是进行事件分配的线程，这个线程可以进一步分配事件给其他线程执行
-// #define EVT_MENU_REFRESH  ((enum event_id_e)300)
-
-
-
-// static void led_on_event(enum event_id_e id,uint32_t param,void* user)
-// {
-//   ARG_UNUSED(param);
-//   ARG_UNUSED(user);
-//   if (id == EVT_KEY_PRESSED) {
-//     HAL_UART_Transmit(&huart1, "led_on\r\n", 8, HAL_MAX_DELAY);
-//   }
-// }
-
-// static void key_pressed_event(enum event_id_e id,uint32_t param,void* user)
-// {
-//   ARG_UNUSED(param);
-//   ARG_UNUSED(user);
-//   // if (id == EVT_KEY_PRESSED ) {
-//     HAL_UART_Transmit(&huart1, "key_pressed\r\n", 13, HAL_MAX_DELAY);
-//   // }
-// }
-
 
 void key_module_run(void)
 {
@@ -98,9 +70,6 @@ void task_rx(void *argument)
     /* USER CODE END task_user_fun */
 }
 
-//之后封装的话，应该是调用对应经过封装过的uart_transmit_id 了
-//那就串口发送使用一个队列，其他不需要句柄的就使用另外一个队列，通过id_e 进行区分
-
 void task_tx(void *argument)
 {
     /* USER CODE BEGIN task_100ms_fun */
@@ -116,24 +85,6 @@ void task_tx(void *argument)
         }
     }
     /* USER CODE END task_100ms_fun */
-}
-
-
-// static void callback_500ms_low(enum event_id_e id,uint32_t param,void* user)
-// {
-//   HAL_UART_Transmit(&huart1, "500ms_low\r\n",11,HAL_MAX_DELAY);
-// }
-
-// static void callback_1000ms_high(enum event_id_e id,uint32_t param,void* user)
-// {
-//   HAL_UART_Transmit(&huart1, "1000ms_high\r\n",13,HAL_MAX_DELAY);
-// }
-
-int test_callback(uint8_t* data,uint32_t len32,void* user_data)
-{
-    HAL_UART_Transmit(&huart1, data, len32, HAL_MAX_DELAY);
-    event_publish_ay(EVT_KEY_PRESSED,0,1);
-    return 0;
 }
 
 // void task_10ms_low_fun(void *argument)
@@ -173,32 +124,13 @@ int test_callback(uint8_t* data,uint32_t len32,void* user_data)
 //   /* USER CODE END task_10ms_low_fun */
 // }
 
-
-void ano_callback(uint16_t base , uint16_t frame)
-{
-
-  uint8_t ano_device[2] = {base,frame};
-  HAL_UART_Transmit(&huart1, ano_device, 2,HAL_MAX_DELAY);
-}
-
-
-
-static void ano_com_event(enum event_id_e id,uint32_t param,void* user)
-{
-  xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
-}
-
-
-
 void task_10ms_low_fun(void *argument)
 {
     struct ano_event_t ano_event;
     for (;;)
     {
         xQueueReceive(ano_tx_queue, &ano_event, portMAX_DELAY);
-            // ano_send_data(ano_event.base,ano_event.id);
-        // uint8_t data[2] = {ano_event.ano_base, ano_event.ano_id};
-        // HAL_UART_Transmit(&huart1, data, 2, HAL_MAX_DELAY);
+        ano_send_data(ano_event.me, ano_event.frame);
     }
 }
 
@@ -211,8 +143,6 @@ void task_event(void *argument)
   /* USER CODE BEGIN task_10ms_high_fun */
   // struct ano_event_t event;
   driver_init_all();
-  uart_register_callback(g_uart_computer, test_callback,NULL);
-  
   // struct ano_event_t base1_1 = {.ano_id = 1,.ano_base = 1};
   // struct ano_event_t base2_2 = {.ano_base = 2,.ano_id = 2};
   // struct ano_event_t base2_3 = {.ano_base = 2,.ano_id = 3};

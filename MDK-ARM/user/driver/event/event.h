@@ -38,9 +38,9 @@ typedef void (*event_handler_t)(enum event_id_e id, uint32_t param, void *user);
 
 void event_publish_sy(enum event_id_e id,uint32_t param);
 
-void event_publish_ay(enum event_id_e id,uint32_t param,uint8_t prior);
+// void event_publish_ay(enum event_id_e id,uint32_t param,uint8_t prior);
 
-void event_publish_ay_isr(enum event_id_e id,uint32_t param,enum event_prio_e prior);
+// void event_publish_ay_isr(enum event_id_e id,uint32_t param,enum event_prio_e prior);
 
 void event_subscribe(enum event_id_e id,event_handler_t handler,void *user,uint8_t priority);
 
