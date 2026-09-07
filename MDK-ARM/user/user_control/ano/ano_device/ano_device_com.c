@@ -79,6 +79,9 @@ void com_send_buffer(uint8_t *data,uint8_t len8)
 }
 
 
+//prio 可能没有明显效果，比如定时事件中，EVT_TIMER_1000MS 一产生就被取走，导致即使EVT_TIMER_500MS 优先级更高，却是1000MS的事件先执行
+//因为1000MS的事件先产生，想要解决的话，就只能够通过约束soft_timer中 1000MS的回调注册在500ms之后 syster_timer_init 中约束
+// 
 static void s_ano_device_com_init(void)
 {
     //默认都可以事件触发
