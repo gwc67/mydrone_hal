@@ -16,7 +16,9 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
     tx_buffer[cnt++] = frame;
     tx_buffer[cnt++] = 0;
 
-    me->cfg_pst->ano_add_send_data(frame,&cnt,tx_buffer);
+    CHECKIF(me->add_send_data) {
+        me->add_send_data(frame,&cnt,tx_buffer);
+    }
 
     tx_buffer[3] = cnt - 4;
     
@@ -38,7 +40,10 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
         me->frame_pst->send2check_st.ac_uc = check_sum2;
     }
 
-    me->cfg_pst->ano_send_buffer(tx_buffer,cnt);
+    CHECKIF(me->send_buffer)
+    {
+        me->send_buffer(tx_buffer,cnt);
+    }
 
     return 0;
 
@@ -106,8 +111,24 @@ static int s_data_SetWts(struct ano_base_t* base,uint8_t frame)
     return 0;
 }
 
+static int s_register_callback(struct ano_base_t* base,ano_receive_anl_t receive_anl,ano_add_send_data_t add_send_data,ano_send_buffer_t send_buffer)
+{
+    struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
+    me->add_send_data = add_send_data ;
+    me->send_buffer = send_buffer;
+    me->receive_anl = receive_anl;
 
-//对应匿名发送，使用的是订阅机制，走的是统一订阅事件
+    return 0;
+}
+
+static int s_clear_wait(struct ano_base_t* base)
+{
+    struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
+    me->frame_pst->check_repeat_st.wait_ck = 0;
+    return 0;
+}
+
+//对应匿名定时发送，使用的是订阅机制，走的是统一订阅事件
 //匿名接受，使用的rx和tx单独的队列机制
 static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
 {
@@ -132,6 +153,8 @@ const ano_ops_t ano_ops_st = {
     .set_send_id = s_set_send_id,
     .set_send2check = s_send2check,
     .set_par = s_set_par,
+    .register_callback = s_register_callback,
+    .clear_wait = s_clear_wait,
 };
 
 static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
@@ -145,28 +168,28 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
             me->rx_state = 1;
             me->data_cnt8 = 0;
             me->data_len8 = 0;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
         }
         else if (me->rx_state == 1 && data[i] == 0xFF)
         {
             me->rx_state = 2;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
         }
         else if (me->rx_state == 2)
         {
             me->rx_state = 3;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
         }
         else if (me->rx_state == 3)
         {
             me->rx_state = 4;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
             me->data_len8 = data[i];
         }
         else if (me->rx_state == 4 && me->data_len8 > 0)
         {
             me->data_len8--;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
             if (me->data_len8 == 0)
             {
                 me->rx_state = 5;
@@ -175,13 +198,16 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
         else if (me->rx_state == 5)
         {
             me->rx_state = 6;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
+            me->rx_buffer[me->data_cnt8++] = data[i];
         }
         else if (me->rx_state == 6)
         {
             me->rx_state = 0;
-            me->cfg_pst->rx_buffer[me->data_cnt8++] = data[i];
-            me->cfg_pst->ano_receive_anl(me->cfg_pst->rx_buffer, me->data_cnt8);
+            me->rx_buffer[me->data_cnt8++] = data[i];
+            CHECKIF(me->receive_anl)
+            {
+                me->receive_anl(me->rx_buffer, me->data_cnt8);
+            }
         }
         else
         {
@@ -192,16 +218,14 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
 
 }
 
-
-
-int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,const struct ano_cfg_t* cfg_pst,uart_base_t* uart_base, const char* name)
+int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,uint8_t* rx_buffer,uart_base_t* uart_base, const char* name)
 {
-    if (!me || !frame_pst || !cfg_pst->rx_buffer)
+    if (!me || !frame_pst || me->rx_buffer)
     {
         return -EINVAL;
     }
     me->frame_pst = frame_pst;
-    me->cfg_pst = cfg_pst;
+    me->rx_buffer = rx_buffer;
     me->data_cnt8 = 0;
     me->data_len8 = 0;
     me->rx_state = 0;

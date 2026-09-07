@@ -39,7 +39,11 @@ void uart_board_init(void)
     };
     uart_it_init(&s_uart_computer, &com_cfg, "uart_computer");
     g_uart_computer = &s_uart_computer.base;
-    uart_receive_enable(g_uart_computer);
-
 }
 DRIVER_INIT_1(uart_board_init);
+
+void uart_receive_all_init(void)
+{
+    uart_receive_enable(g_uart_computer);
+}
+DRIVER_INIT_4(uart_receive_all_init);

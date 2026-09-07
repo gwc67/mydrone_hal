@@ -16,13 +16,7 @@ void ano_board_init(void)
 {
     int result = 0;
 
-    static const struct ano_cfg_t s_com_cfg = {
-        .ano_add_send_data = com_add_send_data,
-        .ano_send_buffer = com_send_buffer,
-        .ano_receive_anl = com_receive_anl,
-        .rx_buffer = s_com_rxbuffer,
-    };
-    result = ano_device_init(&s_com_st, &s_com_frame_st, &s_com_cfg,g_uart_computer,"computer");
+    result = ano_device_init(&s_com_st, &s_com_frame_st, s_com_rxbuffer,g_uart_computer,"computer");
     if (result != 0) {
         return;
     } 

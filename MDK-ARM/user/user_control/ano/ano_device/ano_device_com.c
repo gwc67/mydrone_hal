@@ -3,13 +3,8 @@
 #include "uarts.h"
 #include "driver_registry.h"
 
-static void s_ano_device_com_init(void)
-{
-    //默认都可以事件触发
-    ano_set_send_id(g_com_ano, 0x02,EVT_TIMER_1000MS,2);
-    ano_set_send_id(g_com_ano, 0x01,EVT_TIMER_1000MS,1);
-}
-DRIVER_INIT_3(s_ano_device_com_init);
+
+
 
 void com_receive_anl(uint8_t* data,uint8_t len8)
 {
@@ -82,3 +77,14 @@ void com_send_buffer(uint8_t *data,uint8_t len8)
 {
     uart_transmit(g_uart_computer, data, len8);
 }
+
+
+static void s_ano_device_com_init(void)
+{
+    //默认都可以事件触发
+    ano_register_callback(g_com_ano, com_receive_anl, com_add_send_data, com_send_buffer);
+    ano_set_send_id(g_com_ano, 0x02,EVT_TIMER_1000MS,2);
+    ano_set_send_id(g_com_ano, 0x01,EVT_TIMER_1000MS,1);
+}
+
+DRIVER_INIT_3(s_ano_device_com_init);

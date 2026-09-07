@@ -73,6 +73,23 @@ int ano_get_par(ano_base_t *me,struct par_t* par_pst)
   return me->ops->get_par(me,par_pst);
 }
 
+int ano_clear_wait(ano_base_t *me)
+{
+  CHECKIF(me == NULL || me->ops == NULL || me->ops->clear_wait == NULL) {
+    return -EINVAL; //  Invalid argument
+  }
+  return me->ops->clear_wait(me);
+}
+
+int ano_register_callback(ano_base_t* me,ano_receive_anl_t receive_anl,ano_add_send_data_t add_send_data,ano_send_buffer_t send_buffer)
+{
+    CHECKIF(me == NULL || me->ops == NULL || me->ops->clear_wait == NULL) {
+      return -EINVAL;
+    }
+
+    return me->ops->register_callback(me,receive_anl,add_send_data,send_buffer);
+}
+
 // int ano_ck_back_check(ano_base_t*me)
 // {
 //     CHECKIF(me == NULL || me->ops == NULL || me->ops->ck_back_check == NULL) {
@@ -91,13 +108,7 @@ int ano_get_par(ano_base_t *me,struct par_t* par_pst)
 //   return me->ops->ano_check_data(me);
 // }
 
-// int ano_clear_wait(ano_base_t *me)
-// {
-//   CHECKIF(me == NULL || me->ops == NULL || me->ops->clear_wait == NULL) {
-//     return -EINVAL; //  Invalid argument
-//   }
-//   return me->ops->clear_wait(me);
-// }
+
 
 
 
