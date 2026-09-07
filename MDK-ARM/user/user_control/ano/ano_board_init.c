@@ -1,27 +1,34 @@
-// #include "ano_base.h"
-// #include "ano_true.h"
-// #include "zephyr/init.h"
-// #include <stdint.h>
-// #include <string.h>
-// #include "ano_device/ano_device_com.h"
+#include "ano_base.h"
+#include "ano_true.h"
+#include "ano_device_com.h"
+#include "uarts.h"
+#include "driver_registry.h"
+//*************************************************************************************************** */
+//可不可以通过注册回调的方式是上层调用给底层，而不是在board_init中进行包含其他的上层的函数呢？
+// *******************************************************************************************************
 
-// static struct ano_device_t s_com_st;
-// static uint8_t s_com_rx_buffer_pst[FRAME_MAX_LENGTH];
-// static struct ano_frame_t s_com_frame_st;
+static struct ano_device_t s_com_st;
+static uint8_t s_com_rxbuffer[FRAME_MAX_LENGTH];
+static struct ano_frame_t s_com_frame_st;
+struct ano_base_t* g_com_ano;
 
-// struct ano_base_t* g_com_ano_pst;
+void ano_board_init(void)
+{
+    int result = 0;
 
-// int ano_board_init(void)
-// {
-//     int result = 0;
-//     result = ano_device_init_noraml(&s_com_st, &s_com_frame_st, &s_com_cfg_st);
-//     if (result != 0) {
-//         return -1;
-//     }
-    
+    static const struct ano_cfg_t s_com_cfg = {
+        .ano_add_send_data = com_add_send_data,
+        .ano_send_buffer = com_send_buffer,
+        .ano_receive_anl = com_receive_anl,
+        .rx_buffer = s_com_rxbuffer,
+    };
+    result = ano_device_init(&s_com_st, &s_com_frame_st, &s_com_cfg,g_uart_computer,"computer");
+    if (result != 0) {
+        return;
+    } 
+    g_com_ano = &s_com_st.base;
 
-//     g_com_ano_pst = &s_com_st.base;
 
-//     return result;
+}
 
-// }
+DRIVER_INIT_2(ano_board_init);

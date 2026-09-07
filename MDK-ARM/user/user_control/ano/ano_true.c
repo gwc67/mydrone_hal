@@ -203,7 +203,7 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
 
 
 
-int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,const struct ano_cfg_t* cfg_pst,const char* name)
+int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,const struct ano_cfg_t* cfg_pst,uart_base_t* uart_base, const char* name)
 {
     if (!me || !frame_pst || !cfg_pst->rx_buffer)
     {
@@ -218,7 +218,7 @@ int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,const 
     me->base.ops = &ano_ops_st;
     me->base.name = name;
     //注册解析函数到串口
-    uart_register_callback(me->cfg_pst->uart_base,s_ano_rx_callback,&me->base);
+    uart_register_callback(uart_base,s_ano_rx_callback,&me->base);
     return 0;
 }
 

@@ -114,6 +114,7 @@ targets:
         - user/user_control/ano
         - user/driver/event
         - user/driver/double_tree
+        - user/user_control/ano/ano_device
       libList: []
     excludeList: []
     settings:
