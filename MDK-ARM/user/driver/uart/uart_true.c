@@ -95,12 +95,36 @@ static int s_uart_rx_isr_it(struct uart_base_t* base,uint32_t len32)
     return HAL_UARTEx_ReceiveToIdle_IT(me->uart_handle, me->rx_data, me->rx_len32);   
 }
 
-static int s_uart_rx_isr_dma(struct uart_base_t* base,uint32_t len32)
+static int s_uart_rx_isr_dma(struct uart_base_t* base,uint32_t Size)
 {
     struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);
 
     BaseType_t xtaskwoken = pdFALSE;
-    ring_buf_put(&me->rx_ring, me->rx_data, len32);
+
+    uint32_t len32;
+
+    if (Size == me->old_pos32) {
+        //没有新数据
+        return -ENODATA;
+    }
+
+    if (Size > me->old_pos32) {
+        //未回绕
+        len32 = Size - me->old_pos32;
+        ring_buf_put(&me->rx_ring, &me->rx_data[me->old_pos32], len32);
+    }
+    else {
+        //1.第一段 [old_pos,RX_BUFFER_SIZE)
+        len32 = me->rx_len32  - me->old_pos32;
+        ring_buf_put(&me->rx_ring, &me->rx_data[me->old_pos32], len32);
+        //2.第二段 [0,Size)
+        if (Size > 0) {
+            ring_buf_put(&me->rx_ring, me->rx_data, Size);
+        }
+
+    }
+
+    me->old_pos32 = Size;
 
     struct uart_event_t event = {
         .base = base,
@@ -108,6 +132,8 @@ static int s_uart_rx_isr_dma(struct uart_base_t* base,uint32_t len32)
     };
     xQueueSendFromISR(uart_rx_queue, &event, &xtaskwoken);
     portYIELD_FROM_ISR(xtaskwoken);
+    return 0;
+    
 }
 
 
@@ -119,10 +145,10 @@ static int s_uart_rx_enalbe_it(struct uart_base_t* base)
     return HAL_UARTEx_ReceiveToIdle_IT(me->uart_handle, me->rx_data, me->rx_len32);   
 }
 
-static int s_uart_rx_enalbe_it(struct uart_base_t* base)
+static int s_uart_rx_enalbe_dma(struct uart_base_t* base)
 {
     struct uart_device_t* me = CONTAINER_OF(base, struct uart_device_t, base);
-    __HAL_DMA_DISABLE_IT(me->pUartHandle->hdmarx,DMA_IT_HT); // 关闭接受过半中断
+    __HAL_DMA_DISABLE_IT(me->uart_handle->hdmarx,DMA_IT_HT); // 关闭接受过半中断
     return HAL_UARTEx_ReceiveToIdle_DMA(me->uart_handle, me->rx_data, me->rx_len32);   
 }
 
@@ -167,6 +193,17 @@ const uart_ops_t uart_ops_it = {
     .uart_tx_callback = s_uart_tx_callback_it,
 };
 
+const uart_ops_t uart_ops_dma = {
+    .uart_rx_enable = s_uart_rx_enalbe_dma,
+    .uart_transmit = s_uart_tx,
+    .uart_rx_isr = s_uart_rx_isr_dma,
+    .uart_get_handle = s_uart_get_handle,
+    .uart_register_callback = s_uart_callback_register,
+    .uart_rx_analyze = s_uart_rx_analyze,
+    .uart_tx_isr = s_uart_tx_isr,
+    .uart_tx_callback = s_uart_tx_callback_dma,
+};
+
 int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
 {
     if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
@@ -184,7 +221,28 @@ int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const ch
 
     me->tx_len32 = cfg->tx_len32;
     me->rx_len32 = cfg->rx_len32;
+    return  0;
+}
 
+int uart_dma_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
+{
+    if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
+        return -EINVAL;
+    }
+    me->base.name = name;
+    me->base.ops = &uart_ops_dma;
+    me->uart_handle = cfg->uart_handle;
+    
+    ring_buf_init(&me->rx_ring,cfg->rx_ring_len32,cfg->rx_ring_data);
+    ring_buf_init(&me->tx_ring,cfg->tx_ring_len32,cfg->tx_ring_data);
+
+    me->rx_data = cfg->rx_data;
+    me->tx_data = cfg->tx_data;
+
+    me->tx_len32 = cfg->tx_len32;
+    me->rx_len32 = cfg->rx_len32;
+
+    me->old_pos32 = 0;
 
     return  0;
 }

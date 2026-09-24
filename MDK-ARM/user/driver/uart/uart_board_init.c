@@ -23,13 +23,6 @@ __attribute__((section(".dma_buf"))) static uint8_t s_lx_rx[RX_LEN];
 struct uart_base_t* g_uart_com;
 struct uart_base_t* g_uart_lx;
 
-// struct uart_base_t* s_uart_get_base(UART_HandleTypeDef** uart_handle_pp)
-// {
-//     struct uart_device_t* me = CONTAINER_OF(uart_handle_pp, struct uart_device_t, uart_handle_pp);
-//     return &me->base;
-// }
-
-
 void uart_board_init(void)
 {
     
@@ -46,6 +39,7 @@ void uart_board_init(void)
     };
     uart_it_init(&s_uart_computer, &com_cfg, "uart_computer");
     g_uart_com = &s_uart_computer.base;
+
     struct uart_cfg_t lx_cfg = {
         .uart_handle = &huart1,
         .rx_data = s_lx_rx,
@@ -57,7 +51,9 @@ void uart_board_init(void)
         .rx_len32 = RX_LEN,
         .rx_ring_len32 = RING_RX_LEN,
     };
-    
+    uart_dma_init(&s_uart_lx, &lx_cfg, "uart_lx");
+
+    g_uart_lx = &s_uart_lx.base;
    
 }
 DRIVER_INIT_1(uart_board_init);
