@@ -1,0 +1,24 @@
+; ******************************************************************
+; *** Custom Scatter File for D-Cache + DMA co-existence ***
+; ******************************************************************
+; AXI SRAM partition (512KB total):
+;   0x24000000 - 0x24000FFF (4KB): DMA buffers (NOT cacheable via MPU subregion 0)
+;   0x24001000 - 0x2407FFFF (508KB): All other variables (cacheable via MPU subregions 1-7)
+; ******************************************************************
+
+LR_IROM1 0x08000000 0x00200000 {
+	ER_IROM1 0x08000000 0x00200000 {
+		*.o (RESET, +First)
+		*(InRoot$$Sections)
+		.ANY (+RO)
+		.ANY (+XO)
+	}
+	; DMA buffers (4KB, non-cacheable)
+	RW_DMA_NC 0x24000000 0x00001000 {
+		*(.dma_buf)
+	}
+	; All other variables (508KB, cacheable, in remaining AXI SRAM)
+	RW_DMA 0x24001000 0x0007F000 {
+		.ANY (+RW +ZI)
+	}
+}

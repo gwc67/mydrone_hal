@@ -51,15 +51,15 @@
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    if (huart == uart_get_handle(g_uart_computer)) {
-        uart_rx_isr(g_uart_computer, Size);
+    if (huart == uart_get_handle(g_uart_com)) {
+        uart_rx_isr(g_uart_com, Size);
     }
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart == uart_get_handle(g_uart_computer)) {
-        uart_tx_isr(g_uart_computer);
+    if (huart == uart_get_handle(g_uart_com)) {
+        uart_tx_isr(g_uart_com);
     }
 }
 

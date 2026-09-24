@@ -32,7 +32,6 @@ static void s_timer_callback(TimerHandle_t xTimer)
   
 }
 
-
 void syster_timer_init(void)
 {
   TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(500),pdTRUE,(void*)NOTIFY_BIT_500MS,s_timer_callback);

@@ -15,7 +15,7 @@ void ano_board_init(void)
 {
     int result = 0;
 
-    result = ano_device_init(&s_com_st, &s_com_frame_st, s_com_rxbuffer,g_uart_computer,"computer");
+    result = ano_device_init(&s_com_st, &s_com_frame_st, s_com_rxbuffer,g_uart_com,"computer");
     if (result != 0) {
         return;
     } 

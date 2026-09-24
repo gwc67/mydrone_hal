@@ -144,7 +144,7 @@ targets:
             $outputTaskExcludes:
               - .bin
             output-format: elf
-        scatterFilePath: ""
+        scatterFilePath: D:\Downloads\stm32project\mydrone_hal\MDK-ARM\mydrone2_dma.sct
         storageLayout:
           RAM:
             - id: 1
@@ -218,7 +218,7 @@ targets:
                 size: "0x0"
                 startAddr: "0x0"
               tag: IROM
-        useCustomScatterFile: false
+        useCustomScatterFile: true
     uploadConfigMap:
       JLink:
         baseAddr: ""
