@@ -1,20 +1,20 @@
 #include "uarts.h"
 #include "main.h"
 
-// void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-// {
-//     if (huart == uart_handle_get(pstbase_subus_uart)) //?????
-//     {
-//         HAL_UART_AbortReceive_IT(uart_handle_get(pstbase_subus_uart));
-//         uart_receive_enable(pstbase_subus_uart);
-//     }
-//     if (huart == uart_handle_get(pstbase_lx_uart)) //????imu
-//     {
-//         //清除错误标志位
-//         __HAL_UART_CLEAR_FLAG(uart_handle_get(pstbase_lx_uart), UART_CLEAR_OREF | UART_CLEAR_NEF | UART_CLEAR_PEF | UART_CLEAR_FEF);
-//         HAL_UART_AbortReceive_IT(uart_handle_get(pstbase_lx_uart));
-//         uart_receive_enable(pstbase_lx_uart);
-//     }
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    // if (huart == uart_handle_get(pstbase_subus_uart)) //?????
+    // {
+    //     HAL_UART_AbortReceive_IT(uart_handle_get(pstbase_subus_uart));
+    //     uart_receive_enable(pstbase_subus_uart);
+    // }
+    if (huart == uart_get_handle(g_uart_lx)) //????imu
+    {
+        //清除错误标志位
+        __HAL_UART_CLEAR_FLAG(uart_get_handle(g_uart_lx), UART_CLEAR_OREF | UART_CLEAR_NEF | UART_CLEAR_PEF | UART_CLEAR_FEF);
+        HAL_UART_AbortReceive_IT(uart_get_handle(g_uart_lx));
+        uart_receive_enable(g_uart_lx);
+    }
 //     if (huart == uart_handle_get(pstbase_anoof_uart)) //????
 //     {
 //         __HAL_UART_CLEAR_FLAG(uart_handle_get(pstbase_anoof_uart), UART_CLEAR_OREF | UART_CLEAR_NEF | UART_CLEAR_PEF | UART_CLEAR_FEF);
@@ -46,7 +46,7 @@
 //         HAL_UART_AbortReceive_IT(uart_handle_get(pstbase_usart5_uart));
 //         uart_receive_enable(pstbase_usart5_uart);
 //     }
-// }
+}
 
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
@@ -54,11 +54,17 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     if (huart == uart_get_handle(g_uart_com)) {
         uart_rx_isr(g_uart_com, Size);
     }
+    else if(huart == uart_get_handle(g_uart_lx)) {
+        uart_rx_isr(g_uart_lx, Size);
+    }
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart == uart_get_handle(g_uart_com)) {
+    if (huart == uart_get_handle(g_uart_lx)) {
+        uart_tx_isr(g_uart_lx);
+    }
+    else if(huart == uart_get_handle(g_uart_com)) {
         uart_tx_isr(g_uart_com);
     }
 }

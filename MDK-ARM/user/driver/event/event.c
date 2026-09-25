@@ -57,7 +57,7 @@ void event_publish_sy(enum event_id_e id,uint32_t param)
   uint16_t i;
   for (i = 0; i < SUB_MAX; i++) {
     if ((s_subs[i].used != 0) && (s_subs[i].id == id)) {
-      s_subs[i].handler(id,param,s_subs->user);
+      s_subs[i].handler(id,param,s_subs[i].user);
     }
   }
 }

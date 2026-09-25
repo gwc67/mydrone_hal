@@ -22,18 +22,12 @@ struct ano_frame_t
     struct ck_t back2check_st;
     struct par_t par_data_st;
 };
-// struct ano_cfg_t {
-//     // struct uart_base_t* uart_base;
-//     uint8_t* rx_buffer;
-// };
-
 
 struct ano_device_t
 {
     struct ano_base_t base;
     struct ano_frame_t* frame_pst;
     uint8_t*rx_buffer;
-    // const struct ano_cfg_t* cfg_pst;
     uint8_t rx_state;
     uint8_t data_len8;
     uint8_t data_cnt8;
@@ -41,9 +35,6 @@ struct ano_device_t
     ano_add_send_data_t add_send_data;
     ano_send_buffer_t  send_buffer;
     ano_receive_anl_t  receive_anl;
-
-    
-    
 };
 int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,uint8_t* rx_buffer,uart_base_t* uart_base, const char* name);
 

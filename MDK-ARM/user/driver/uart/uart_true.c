@@ -182,6 +182,8 @@ static int s_uart_callback_register(uart_base_t* base,uart_callback_t callback,v
     me->callback = callback;
     return 0;
 }
+
+// it tx rx
 const uart_ops_t uart_ops_it = {
     .uart_rx_enable = s_uart_rx_enalbe_it,
     .uart_transmit = s_uart_tx,
@@ -193,10 +195,24 @@ const uart_ops_t uart_ops_it = {
     .uart_tx_callback = s_uart_tx_callback_it,
 };
 
+// dma tx rx
 const uart_ops_t uart_ops_dma = {
     .uart_rx_enable = s_uart_rx_enalbe_dma,
     .uart_transmit = s_uart_tx,
     .uart_rx_isr = s_uart_rx_isr_dma,
+    .uart_get_handle = s_uart_get_handle,
+    .uart_register_callback = s_uart_callback_register,
+    .uart_rx_analyze = s_uart_rx_analyze,
+    .uart_tx_isr = s_uart_tx_isr,
+    .uart_tx_callback = s_uart_tx_callback_dma,
+};
+
+//dma tx it rx 
+const uart_ops_t uart_ops_dma_it = {
+    .uart_rx_enable = s_uart_rx_enalbe_it,
+    .uart_rx_isr = s_uart_rx_isr_it,
+
+    .uart_transmit = s_uart_tx,
     .uart_get_handle = s_uart_get_handle,
     .uart_register_callback = s_uart_callback_register,
     .uart_rx_analyze = s_uart_rx_analyze,
@@ -231,6 +247,30 @@ int uart_dma_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const c
     }
     me->base.name = name;
     me->base.ops = &uart_ops_dma;
+    me->uart_handle = cfg->uart_handle;
+    
+    ring_buf_init(&me->rx_ring,cfg->rx_ring_len32,cfg->rx_ring_data);
+    ring_buf_init(&me->tx_ring,cfg->tx_ring_len32,cfg->tx_ring_data);
+
+    me->rx_data = cfg->rx_data;
+    me->tx_data = cfg->tx_data;
+
+    me->tx_len32 = cfg->tx_len32;
+    me->rx_len32 = cfg->rx_len32;
+
+    me->old_pos32 = 0;
+
+    return  0;
+}
+
+//dma 发送 it 接受
+int uart_dma_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
+{
+    if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
+        return -EINVAL;
+    }
+    me->base.name = name;
+    me->base.ops = &uart_ops_dma_it;
     me->uart_handle = cfg->uart_handle;
     
     ring_buf_init(&me->rx_ring,cfg->rx_ring_len32,cfg->rx_ring_data);

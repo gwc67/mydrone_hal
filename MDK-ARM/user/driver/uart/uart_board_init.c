@@ -10,8 +10,8 @@
 static struct uart_device_t s_uart_computer;
 static uint8_t s_com_ring_rx[RING_RX_LEN];
 static uint8_t s_com_ring_tx[RING_TX_LEN];
-__attribute__((section(".dma_buf"))) static uint8_t s_com_tx[TX_LEN];
-__attribute__((section(".dma_buf"))) static uint8_t s_com_rx[RX_LEN];
+static uint8_t s_com_tx[TX_LEN];
+static uint8_t s_com_rx[RX_LEN];
 
 static struct uart_device_t s_uart_lx;
 static uint8_t s_lx_ring_rx[RING_RX_LEN];
@@ -41,7 +41,7 @@ void uart_board_init(void)
     g_uart_com = &s_uart_computer.base;
 
     struct uart_cfg_t lx_cfg = {
-        .uart_handle = &huart1,
+        .uart_handle = &huart4,
         .rx_data = s_lx_rx,
         .tx_data = s_lx_tx,
         .rx_ring_data = s_lx_ring_rx,
@@ -61,5 +61,6 @@ DRIVER_INIT_1(uart_board_init);
 void uart_receive_all_init(void)
 {
     uart_receive_enable(g_uart_com);
+    uart_receive_enable(g_uart_lx);
 }
 DRIVER_INIT_4(uart_receive_all_init);

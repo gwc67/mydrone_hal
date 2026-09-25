@@ -38,5 +38,6 @@ struct uart_device_t
 
 int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name);
 int uart_dma_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name);
+int uart_dma_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name);
 
 #endif

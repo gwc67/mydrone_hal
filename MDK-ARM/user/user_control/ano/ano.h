@@ -4,6 +4,6 @@
 #include "ano_base.h"
 
 extern struct ano_base_t* g_com_ano;
-
+extern struct ano_base_t* g_lx_ano;
 
 #endif

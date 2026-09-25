@@ -1,13 +1,19 @@
 #ifndef __ANO_BASE_H
 #define __ANO_BASE_H
 #include <stdint.h>
-
 #include "event.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+extern QueueHandle_t      ano_tx_queue;
+
+
+
 struct ck_t {
     uint8_t id_uc;
     uint8_t sc_uc;
     uint8_t ac_uc;
 };
+
 
 struct cmd_t{
     uint8_t cid_uc;
@@ -26,6 +32,12 @@ struct ano_event_t
     struct ano_base_t* me;
     uint8_t frame;   
 };
+
+static inline void ano_put_event(struct ano_base_t* me,uint8_t frame)
+{
+    struct ano_event_t event = {.me = me ,frame = frame};
+    xQueueSend(ano_tx_queue,&event,0);
+}
 
 
 typedef void (*ano_receive_anl_t)(uint8_t* data,uint8_t len8);
