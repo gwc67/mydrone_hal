@@ -5,7 +5,7 @@
 #define  HIGH_PRIO_QUEUE_SIZE 16
 #define  NORMAL_PRIO_QUEUE_SIZE 32
 
-
+typedef int16_t sub_handler_t  ;
 
 enum event_id_e
 {
@@ -36,17 +36,11 @@ typedef void (*event_handler_t)(enum event_id_e id, uint32_t param, void *user);
 
 void event_publish_sy(enum event_id_e id,uint32_t param);
 
-// void event_publish_ay(enum event_id_e id,uint32_t param,uint8_t prior);
-
-// void event_publish_ay_isr(enum event_id_e id,uint32_t param,enum event_prio_e prior);
-
-void event_subscribe(enum event_id_e id,event_handler_t handler,void *user,uint8_t priority);
+sub_handler_t event_subscribe(enum event_id_e id, event_handler_t handler, void *user, uint8_t priority);
 
 void dispatch_event(struct event_t *e);
 
-// #define EVT_KEY_PRESSED   ((enum event_id_e)100)
-// #define EVT_LED_ON        ((enum event_id_e)200)
-// #define EVT_TIMER_10MS    ((enum event_id_e)300)
-// #define EVT_TIMER_500MS    ((enum event_id_e)301)
+int event_desubscribe(sub_handler_t handler);
+
 
 #endif

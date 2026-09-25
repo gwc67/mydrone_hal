@@ -19,7 +19,7 @@
 #define LX_PWM_RX      0x20
 
 static struct lx_qua_t   s_lx_qua;
-static struct lx_state_t s_lx_state
+static struct lx_state_t s_lx_state;
 static struct lx_vel_t   s_lx_vel; 
 static struct lx_led_t   s_led_light;
 

@@ -39,7 +39,7 @@ struct lx_led_t
 	uint8_t blue;
 	uint8_t green;
 	uint8_t ano;
-}
+};
 
 void lx_qua_copy(struct lx_qua_t *out);
 
