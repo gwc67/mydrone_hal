@@ -64,7 +64,7 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
         me->frame_pst->send2check_st.id_uc = frame;
         me->frame_pst->send2check_st.sc_uc = check_sum1;
         me->frame_pst->send2check_st.ac_uc = check_sum2;
-        me->sub_id = event_subscribe(EVT_TIMER_500MS, s_ano_event_callback, &me->frame_pst->ano_event_pst[0xe0],SUB_PRIO_HIGH1);
+        me->sub_id = event_subscribe(EVT_TIMER_1000MS, s_ano_event_callback, &me->frame_pst->ano_event_pst[0xe0],SUB_PRIO_HIGH1);
         me->frame_pst->check_repeat_st.wait_ck = 1;
     }
 

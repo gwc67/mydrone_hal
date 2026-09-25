@@ -27,6 +27,7 @@ void com_receive_anl(uint8_t* data,uint8_t len8)
     if(*(data + 2) == 0x00)
     {
         struct ck_t snap = {0};
+        ano_get_send2check(ANO_HANDEL,&snap);
         if (snap.id_uc == *(data + 4) && snap.sc_uc == *(data + 5) && snap.ac_uc == *(data + 6)) {
             ano_check_0back(ANO_HANDEL);
         }
@@ -82,13 +83,10 @@ void com_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
     }
 }
 
-
 void com_send_buffer(uint8_t *data,uint8_t len8)
 {
     uart_transmit(g_uart_com, data, len8);
 }
-
-
 //prio 可能没有明显效果，比如定时事件中，EVT_TIMER_1000MS 一产生就被取走，导致即使EVT_TIMER_500MS 优先级更高，却是1000MS的事件先执行
 //因为1000MS的事件先产生，想要解决的话，就只能够通过约束soft_timer中 1000MS的回调注册在500ms之后 syster_timer_init 中约束
 
