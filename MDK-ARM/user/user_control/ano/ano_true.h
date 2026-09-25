@@ -9,8 +9,7 @@
 struct check_repeat_t
 {
     uint8_t wait_ck;
-    uint8_t repeat_cnt_uc;
-    uint8_t time_dly_uc;
+    uint8_t repeat;
 };
 
 struct ano_frame_t
@@ -31,7 +30,9 @@ struct ano_device_t
     uint8_t rx_state;
     uint8_t data_len8;
     uint8_t data_cnt8;
-    
+
+    sub_handler_t sub_id;       //0xe0的订阅者id
+
     ano_add_send_data_t add_send_data;
     ano_send_buffer_t  send_buffer;
     ano_receive_anl_t  receive_anl;

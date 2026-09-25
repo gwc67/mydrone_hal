@@ -88,7 +88,7 @@ void lx_receive_anl(uint8_t* data,uint8_t len8)
         //发送一个0xe0命令帧后，要给个响应，否则会每隔100ms发送5次，5次过后不发
         //0xe0 后触发一个定时器事件，每次触发一次tick加一，直到tick = 5；那么freertos怎么做到呢？
         if (snap.id_uc == *(data + 4) && snap.sc_uc == *(data + 5) && snap.ac_uc == *(data + 6)) {
-            // ano_clear_wait(g_com_ano_pst);
+            ano_check_0back(ANO_HANDEL);
         }
     }
 }

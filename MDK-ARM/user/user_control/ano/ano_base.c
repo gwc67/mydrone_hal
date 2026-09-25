@@ -99,14 +99,14 @@ int ano_register_callback(ano_base_t* me,ano_receive_anl_t receive_anl,ano_add_s
 // }
 
 
-// int ano_check_data(struct ano_base_t*me)
-// {
-//     CHECKIF(me == NULL || me->ops == NULL || me->ops->ano_check_data == NULL) {
-//     return -EINVAL; //  Invalid argument
-//   }
+int ano_check_0back(struct ano_base_t*me)
+{
+    CHECKIF(me == NULL || me->ops == NULL || me->ops->ano_check_0back == NULL) {
+    return -EINVAL; //  Invalid argument
+  }
 
-//   return me->ops->ano_check_data(me);
-// }
+  return me->ops->ano_check_0back(me);
+}
 
 
 

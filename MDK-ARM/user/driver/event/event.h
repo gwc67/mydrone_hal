@@ -15,6 +15,18 @@ enum event_id_e
     EVT_TIMER_1000MS,
 };
 
+enum {
+  SUB_PRIO_HIGH3 = 0,
+  SUB_PRIO_HIGH2,  
+  SUB_PRIO_HIGH1,
+  SUB_PRIO_HIGH,
+  SUB_PRIO_NORMAL3,
+  SUB_PRIO_NORMAL2,
+  SUB_PRIO_NORMAL1,
+  SUB_PRIO_NORMAL,
+  SUB_PRIO_SUM,
+};
+
 // 定义优先级枚举，数值越大，优先级越高
 enum event_prio_e
 {

@@ -2,7 +2,34 @@
 #include "mesc.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include "event.h"
 extern QueueHandle_t      ano_tx_queue;
+
+
+//对应匿名定时发送，使用的是订阅机制，走的是统一订阅事件
+//匿名接受，使用的rx和tx单独的队列机制
+static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
+{
+
+    struct ano_event_t* event = (struct ano_event_t*)user;
+
+    if (event->frame == 0xe0) {
+        struct ano_device_t* me = CONTAINER_OF(event->me, struct ano_device_t, base);
+        me->frame_pst->check_repeat_st.repeat++;
+
+        if (me->frame_pst->check_repeat_st.repeat>= 5) {
+
+               me->frame_pst->check_repeat_st.repeat = 0;
+               me->frame_pst->check_repeat_st.wait_ck = 0;
+               
+               event_desubscribe(me->sub_id);
+        }
+    }
+    
+    xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
+}
+
+
 
 static int s_frame_send(struct ano_base_t* base,uint8_t frame)
 {
@@ -38,6 +65,7 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
         me->frame_pst->send2check_st.id_uc = frame;
         me->frame_pst->send2check_st.sc_uc = check_sum1;
         me->frame_pst->send2check_st.ac_uc = check_sum2;
+        me->sub_id = event_subscribe(EVT_TIMER_500MS, s_ano_event_callback, &me->frame_pst->ano_event_pst[0xe0],SUB_PRIO_HIGH1);
     }
 
     CHECKIF(me->send_buffer)
@@ -128,12 +156,7 @@ static int s_clear_wait(struct ano_base_t* base)
     return 0;
 }
 
-//对应匿名定时发送，使用的是订阅机制，走的是统一订阅事件
-//匿名接受，使用的rx和tx单独的队列机制
-static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
-{
-    xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
-}
+
 static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e event_id_e,uint8_t prio)
 {
 
@@ -143,6 +166,36 @@ static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e e
     event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
     return 0;
 }
+
+
+//event_pulish 每个要有一个handler但是， 先统一定义一个handler，然后让它们调用就可以了，上层只需要进行event_subscibe 和 event_desubscribe
+//需要记住此时的帧id和端口其实，然而这个sub指向的示例必须是静态的，因此还需要加两个函数
+
+
+// static int s_check_0back(struct ano_base_t* base,uint8_t begin)
+// {
+//     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
+    
+//     if (begin == CHECK_0BACK_BEGIN) {
+//         me->sub_id = event_subscribe(EVT_TIMER_500MS, s_ano_event_callback, &me->frame_pst->ano_event_pst[0xe0],SUB_PRIO_HIGH1);
+//     }
+//     else if (begin == CHECK_0BACK_STOP) {
+//         event_desubscribe(me->sub_id);
+//         me->frame_pst->check_repeat_st.repeat = 0;
+//         me->frame_pst->check_repeat_st.wait_ck = 0;
+//     }
+//     return 0;
+// }
+static int s_check_0back(struct ano_base_t* base)
+{
+    struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
+    event_desubscribe(me->sub_id);
+    me->frame_pst->check_repeat_st.repeat = 0;
+    me->frame_pst->check_repeat_st.wait_ck = 0;
+    return 0;
+}
+
+
 const ano_ops_t ano_ops_st = {
     .send_data = s_frame_send,
     .send_cmd = s_send_cmd,
@@ -155,6 +208,7 @@ const ano_ops_t ano_ops_st = {
     .set_par = s_set_par,
     .register_callback = s_register_callback,
     .clear_wait = s_clear_wait,
+    .ano_check_0back = s_check_0back,
 };
 
 static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
@@ -215,7 +269,6 @@ static int s_ano_rx_callback(uint8_t* data,uint32_t len32,void* user_data)
         }
     }
     return 0;
-
 }
 
 int ano_device_init(struct ano_device_t* me,struct ano_frame_t* frame_pst,uint8_t* rx_buffer,uart_base_t* uart_base, const char* name)
