@@ -95,11 +95,10 @@ static void s_ano_device_com_init(void)
 {
     //默认都可以事件触发
     ano_register_callback(ANO_HANDEL, com_receive_anl, com_add_send_data, com_send_buffer);
-    
 
     ano_set_send_id(ANO_HANDEL, 0xe0,EVT_NONE,2);
     
-    // ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
+    ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
 }
 
 DRIVER_INIT_3(s_ano_device_com_init);

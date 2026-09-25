@@ -26,12 +26,7 @@ struct lx_state_t
 	uint8_t CMD_1;
 } ;
 
-struct lx_vel_t
-{
-	int16_t vel_x;
-	int16_t vel_y;
-	int16_t vel_z;
-} __attribute__((__packed__));
+
 
 struct lx_led_t
 {
@@ -40,6 +35,13 @@ struct lx_led_t
 	uint8_t green;
 	uint8_t ano;
 };
+
+struct lx_pwm_t {
+	uint16_t pwm_m1;
+	uint16_t pwm_m2;
+	uint16_t pwm_m3;
+	uint16_t pwm_m4;
+}__attribute__((__packed__));
 
 void lx_qua_copy(struct lx_qua_t *out);
 

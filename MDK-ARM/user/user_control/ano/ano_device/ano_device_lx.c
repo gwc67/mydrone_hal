@@ -1,7 +1,9 @@
 #include "ano.h"
 #include "ano_device_lx.h"
+#include "lx_sensor.h"
 #include "driver_registry.h"
 #include "uarts.h"
+#include "lx_fun.h"
 #define LX_BAT_TX      0x0d
 #define LX_GPS_TX      0x30
 #define LX_GEN_VEL_TX  0x33
@@ -18,16 +20,85 @@
 #define LX_LED_RX      0x0f
 #define LX_PWM_RX      0x20
 
+
+
 static struct lx_qua_t   s_lx_qua;
 static struct lx_state_t s_lx_state;
 static struct lx_vel_t   s_lx_vel; 
 static struct lx_led_t   s_led_light;
+static struct lx_pwm_t   s_lx_pwm;
 
 #define ANO_HANDEL  g_lx_ano
 
 void lx_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
 {
-     
+    switch (frame)
+    {
+    case 0x00:
+        {
+            struct ck_t send2check = {0};
+            ano_get_send2check(ANO_HANDEL,&send2check);
+            data[(*cnt_ptr)++] = send2check.id_uc;
+            data[(*cnt_ptr)++] = send2check.sc_uc;
+            data[(*cnt_ptr)++] = send2check.ac_uc;
+        }
+    break;
+    case LX_BAT_TX: {
+        struct lx_bat_t snap;
+        battery_copy(&snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
+    }
+    break;
+    case LX_GEN_VEL_TX: {
+        struct lx_vel_t snap;
+        vel_fusion_copy(&snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
+    }
+    break;
+    case LX_GEN_DIS_TX: {
+        struct lx_dis_t snap;
+        dis_fusion_copy(&snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
+    }
+    break;
+    case LX_RC_CH_TX: {
+        memcpy(pucTxBuffer + *cnt_ptr, &rc_in_st.rc_ch, 20);
+        *pcnt += 20;
+    }
+    break;
+    case LX_RT_TAR_TX: 
+    {
+        struct rt_tar_t snap;
+        rt_tar_copy(&snap);
+        memcpy(pucTxBuffer + *pcnt, &snap, sizeof(snap));
+        *pcnt += sizeof(snap);
+    }
+    break;
+    case LX_CMD_TX: {
+        pucTxBuffer[(*pcnt)++] = ano_cmd_cid_get(pstAnobase_Lx);
+        uint8_t cmd_bytes[10];
+        ano_cmd_copy_bytes_s(pstAnobase_Lx, cmd_bytes, 10);
+        memcpy(pucTxBuffer + *pcnt, cmd_bytes, 10);
+        *pcnt += 10;
+    }
+    break;
+    case LX_PAR_TX: {
+        // uint16_t par_id = ano_par_id_get(pstAnobase_Lx);
+        // int32_t par_val = ano_par_val_get(pstAnobase_Lx);
+        // pucTxBuffer[(*pcnt)++] = BYTE0(par_id);
+        // pucTxBuffer[(*pcnt)++] = BYTE1(par_id);
+        // pucTxBuffer[(*pcnt)++] = BYTE0(par_val);
+        // pucTxBuffer[(*pcnt)++] = BYTE1(par_val);
+        // pucTxBuffer[(*pcnt)++] = BYTE2(par_val);
+        // pucTxBuffer[(*pcnt)++] = BYTE3(par_val);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
 void lx_receive_anl(uint8_t* data,uint8_t len8)
@@ -64,6 +135,9 @@ void lx_receive_anl(uint8_t* data,uint8_t len8)
     else if (*(data + 2) == LX_LED_RX) {
         memcpy(&s_led_light,(data + 4),sizeof(s_led_light));
     }
+    else if (*(data + 2) == LX_PWM_RX) {
+        memcpy(&s_lx_pwm, (data + 4), sizeof(s_lx_pwm));
+    }
     else if (*(data + 2) == 0xe0)
     {
         struct ck_t send2check = {0};
@@ -88,8 +162,8 @@ void lx_receive_anl(uint8_t* data,uint8_t len8)
             ano_check_0back(ANO_HANDEL);
         }
     }
+    
 }
-
 // uart_transmit(g_uart_com, data, len8);
 
 
