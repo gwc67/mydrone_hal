@@ -62,19 +62,19 @@ void task_timer_event(void *argument)
   {
     if (xTaskNotifyWait(0x00, 0xFFFFFFFF, &NotifyValue, portMAX_DELAY) == pdTRUE) {
       if (NotifyValue & NOTIFY_BIT_10MS ) {
-        pq_push_simple(g_EventQueue,EVT_TIMER_10MS,EVT_PRIO_HIGH,portMAX_DELAY);
+        pq_push_simple(EVT_TIMER_10MS,EVT_PRIO_HIGH,portMAX_DELAY);
       }
       else if (NotifyValue & NOTIFY_BIT_20MS ) {
-        pq_push_simple(g_EventQueue,EVT_TIMER_20MS,EVT_PRIO_NORMAL,portMAX_DELAY);
+        pq_push_simple(EVT_TIMER_20MS,EVT_PRIO_NORMAL,portMAX_DELAY);
       }
       else if (NotifyValue & NOTIFY_BIT_100MS ) {
-        pq_push_simple(g_EventQueue,EVT_TIMER_100MS,EVT_PRIO_NORMAL,portMAX_DELAY);
+        pq_push_simple(EVT_TIMER_100MS,EVT_PRIO_NORMAL,portMAX_DELAY);
       }
       else if (NotifyValue & NOTIFY_BIT_500MS ) {
-        pq_push_simple(g_EventQueue,EVT_TIMER_500MS,EVT_PRIO_LOW,portMAX_DELAY);
+        pq_push_simple(EVT_TIMER_500MS,EVT_PRIO_LOW,portMAX_DELAY);
       }
       else if (NotifyValue & NOTIFY_BIT_1000MS) {
-        pq_push_simple(g_EventQueue,EVT_TIMER_1000MS,EVT_PRIO_LOW,portMAX_DELAY);
+        pq_push_simple(EVT_TIMER_1000MS,EVT_PRIO_LOW,portMAX_DELAY);
       }
     }
   }
@@ -128,12 +128,11 @@ void task_event(void *argument)
 {
 
   driver_init_all();
-  g_EventQueue = pq_create();
   struct event_t receiveEvent;
 
   for(;;)
   {
-    if (pq_pop(g_EventQueue, &receiveEvent, portMAX_DELAY)) {
+    if (pq_pop( &receiveEvent, portMAX_DELAY)) {
       dispatch_event(&receiveEvent);
     }
   }

@@ -1,12 +1,15 @@
 #include "double_tree.h"
 #include "event.h"
+#include "driver_registry.h"
 struct PrioQueue_t {
     struct event_t heap[PQ_MAX_CAPACITY];
     uint32_t size;
     uint32_t seq_counter;           //全局递增序列号
-    SemaphoreHandle_t mutuex;   
+    SemaphoreHandle_t mutex;   
     SemaphoreHandle_t sem;          //计数信号量，用于阻塞等待
 };
+
+static struct PrioQueue_t s_pq;
 
 //prio 越大 优先级越高
 static inline BaseType_t is_higher(const struct event_t *a,const struct event_t *b)
@@ -72,126 +75,116 @@ static void heap_bubble_down( PrioQueue_t *pq,uint32_t index)
 
 
 //这样不就只能创建一个static 静态变量吗？
-PrioQueue_t* pq_create(void)
+void pq_init(void)
 {
-    static struct PrioQueue_t pq;
+    s_pq.size = 0;
+    s_pq.seq_counter = 0;
+    s_pq.mutex = xSemaphoreCreateMutex();
+    s_pq.sem = xSemaphoreCreateCounting(PQ_MAX_CAPACITY, 0);
 
-    pq.size = 0;
-    pq.seq_counter = 0;
-    pq.mutuex = xSemaphoreCreateMutex();
-    pq.sem = xSemaphoreCreateCounting(PQ_MAX_CAPACITY, 0);
-
-    if (pq.mutuex == NULL || pq.sem == NULL) {
-        return NULL;
+    if (s_pq.mutex == NULL || s_pq.sem == NULL) {
+        return;
     }
-    return &pq;
 }
 
-BaseType_t pq_push_simple(PrioQueue_t* pq,enum event_id_e id,
+DRIVER_INIT_1(pq_init);
+
+BaseType_t pq_push_simple(enum event_id_e id,
   enum event_prio_e prio,TickType_t timeout)
 {
 
-    if (pq == NULL) {
-        return pdFAIL;
-    }
-    if (xSemaphoreTake(pq->mutuex,timeout) != pdPASS) {
+    if (xSemaphoreTake(s_pq.mutex,timeout) != pdPASS) {
         return pdFAIL;
     }
 
-    if (pq->size >= PQ_MAX_CAPACITY) {
-        xSemaphoreGive(pq->mutuex);
+    if (s_pq.size >= PQ_MAX_CAPACITY) {
+        xSemaphoreGive(s_pq.mutex);
         return errQUEUE_FULL;
     }
 
     struct event_t event = {.id = id,.prio = prio};
 
-    pq->heap[pq->size] = event;
-    pq->heap[pq->size].seq = pq->seq_counter++;
+    s_pq.heap[s_pq.size] = event;
+    s_pq.heap[s_pq.size].seq = s_pq.seq_counter++;
 
-    heap_bubble_up(pq, pq->size);
-    pq->size++;
+    heap_bubble_up(&s_pq, s_pq.size);
+    s_pq.size++;
 
-    xSemaphoreGive(pq->mutuex);
-    xSemaphoreGive(pq->sem);
+    xSemaphoreGive(s_pq.mutex);
+    xSemaphoreGive(s_pq.sem);
 
     return pdPASS;
 }
 
-BaseType_t pq_push(PrioQueue_t* pq,const struct event_t* event,TickType_t timeout)
+BaseType_t pq_push(const struct event_t* event,TickType_t timeout)
 {
-    if (pq == NULL || event == NULL) {
-        return pdFAIL;
-    }
-    if (xSemaphoreTake(pq->mutuex,timeout) != pdPASS) {
+     if (xSemaphoreTake(s_pq.mutex,timeout) != pdPASS) {
         return pdFAIL;
     }
 
-    if (pq->size >= PQ_MAX_CAPACITY) {
-        xSemaphoreGive(pq->mutuex);
+    if (s_pq.size >= PQ_MAX_CAPACITY) {
+        xSemaphoreGive(s_pq.mutex);
         return errQUEUE_FULL;
     }
 
-    pq->heap[pq->size] = *event;
-    pq->heap[pq->size].seq = pq->seq_counter++;
+    s_pq.heap[s_pq.size] = *event;
+    s_pq.heap[s_pq.size].seq = s_pq.seq_counter++;
 
-    heap_bubble_up(pq, pq->size);
-    pq->size++;
+    heap_bubble_up(&s_pq, s_pq.size);
+    s_pq.size++;
 
-    xSemaphoreGive(pq->mutuex);
-    xSemaphoreGive(pq->sem);
+    xSemaphoreGive(s_pq.mutex);
+    xSemaphoreGive(s_pq.sem);
 
     return pdPASS;
 }
 
-BaseType_t pq_pushfromIsr(PrioQueue_t *pq, const struct event_t *event, BaseType_t *pxHigherprioTaskWoken)
+BaseType_t pq_pushfromIsr(const struct event_t *event, BaseType_t *pxHigherprioTaskWoken)
 {
-    if (pq == NULL || event == NULL) {
-        return pdFAIL;
-    }
-
     UBaseType_t uxSavedInterruptStautus = taskENTER_CRITICAL_FROM_ISR();
-    
-    if (pq->size >= PQ_MAX_CAPACITY) {
+
+    if (s_pq.size >= PQ_MAX_CAPACITY) {
         taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStautus);
         return errQUEUE_FULL;
     }
 
-    pq->heap[pq->size] = *event;
-    pq->heap[pq->size].seq = pq->seq_counter++;
-    heap_bubble_up(pq, pq->size);
-    pq->size++;
+    s_pq.heap[s_pq.size] = *event;
+    s_pq.heap[s_pq.size].seq = s_pq.seq_counter++;
+    heap_bubble_up(&s_pq, s_pq.size);
+    s_pq.size++;
 
     taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStautus);
-    xSemaphoreGiveFromISR(pq->sem, pxHigherprioTaskWoken);
+    xSemaphoreGiveFromISR(s_pq.sem, pxHigherprioTaskWoken);
     return pdPASS;
 }
 
-BaseType_t pq_pop(PrioQueue_t *pq, struct event_t *out_event, TickType_t timeout)
+BaseType_t pq_pop(struct event_t *out_event, TickType_t timeout)
 {
-    if (pq == NULL || out_event == NULL) {
-        return pdFAIL;
-    }              
-
-    if (xSemaphoreTake(pq->sem, timeout) != pdPASS) {
+    if (out_event == NULL) {
         return pdFAIL;
     }
 
-    xSemaphoreTake(pq->mutuex, portMAX_DELAY);
-
-    if (pq->size == 0) {
-        xSemaphoreGive(pq->mutuex);
+    if (xSemaphoreTake(s_pq.sem, timeout) != pdPASS) {
         return pdFAIL;
     }
 
-    *out_event = pq->heap[0];
-    pq->size--;
-    if (pq->size > 0) {
-        pq->heap[0] = pq->heap[pq->size];
-        heap_bubble_down(pq, 0);
+    xSemaphoreTake(s_pq.mutex, portMAX_DELAY);
+
+    if (s_pq.size == 0) {
+        xSemaphoreGive(s_pq.mutex);
+        return pdFAIL;
     }
-    xSemaphoreGive(pq->mutuex);
+
+    *out_event = s_pq.heap[0];
+    s_pq.size--;
+    if (s_pq.size > 0) {
+        s_pq.heap[0] = s_pq.heap[s_pq.size];
+        heap_bubble_down(&s_pq, 0);
+    }
+    xSemaphoreGive(s_pq.mutex);
     return pdPASS;
 }
+
 
 
 
