@@ -55,10 +55,10 @@ extern void syster_timer_init(void);
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for task_1ms */
-osThreadId_t task_1msHandle;
-const osThreadAttr_t task_1ms_attributes = {
-  .name = "task_1ms",
+/* Definitions for task_1ms_name */
+osThreadId_t task_1ms_nameHandle;
+const osThreadAttr_t task_1ms_name_attributes = {
+  .name = "task_1ms_name",
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
@@ -67,42 +67,42 @@ osThreadId_t task_tx_eventHandle;
 const osThreadAttr_t task_tx_event_attributes = {
   .name = "task_tx_event",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* Definitions for task_rx_event */
 osThreadId_t task_rx_eventHandle;
 const osThreadAttr_t task_rx_event_attributes = {
   .name = "task_rx_event",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
-/* Definitions for task_10ms_low */
-osThreadId_t task_10ms_lowHandle;
-const osThreadAttr_t task_10ms_low_attributes = {
-  .name = "task_10ms_low",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+/* Definitions for task_ano_send_e */
+osThreadId_t task_ano_send_eHandle;
+const osThreadAttr_t task_ano_send_e_attributes = {
+  .name = "task_ano_send_e",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal6,
 };
-/* Definitions for task_1ms_dt */
-osThreadId_t task_1ms_dtHandle;
-const osThreadAttr_t task_1ms_dt_attributes = {
-  .name = "task_1ms_dt",
+/* Definitions for task_event_name */
+osThreadId_t task_event_nameHandle;
+const osThreadAttr_t task_event_name_attributes = {
+  .name = "task_event_name",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
+  .priority = (osPriority_t) osPriorityNormal7,
 };
-/* Definitions for task_100ms */
-osThreadId_t task_100msHandle;
-const osThreadAttr_t task_100ms_attributes = {
-  .name = "task_100ms",
-  .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+/* Definitions for task_timer_even */
+osThreadId_t task_timer_evenHandle;
+const osThreadAttr_t task_timer_even_attributes = {
+  .name = "task_timer_even",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal1,
 };
-/* Definitions for task_10ms_high */
-osThreadId_t task_10ms_highHandle;
-const osThreadAttr_t task_10ms_high_attributes = {
-  .name = "task_10ms_high",
+/* Definitions for task_10ms_name */
+osThreadId_t task_10ms_nameHandle;
+const osThreadAttr_t task_10ms_name_attributes = {
+  .name = "task_10ms_name",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal2,
+  .priority = (osPriority_t) osPriorityNormal5,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,13 +110,13 @@ const osThreadAttr_t task_10ms_high_attributes = {
 
 /* USER CODE END FunctionPrototypes */
 
-void task_1ms_fun(void *argument);
+void task_1ms(void *argument);
 void task_tx(void *argument);
 void task_rx(void *argument);
 void task_ano_send(void *argument);
-void task_timer_event(void *argument);
-void task_100ms_fun(void *argument);
 void task_event(void *argument);
+void task_timer_event(void *argument);
+void task_10ms(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -164,8 +164,8 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of task_1ms */
-  task_1msHandle = osThreadNew(task_1ms_fun, NULL, &task_1ms_attributes);
+  /* creation of task_1ms_name */
+  task_1ms_nameHandle = osThreadNew(task_1ms, NULL, &task_1ms_name_attributes);
 
   /* creation of task_tx_event */
   task_tx_eventHandle = osThreadNew(task_tx, NULL, &task_tx_event_attributes);
@@ -173,17 +173,17 @@ void MX_FREERTOS_Init(void) {
   /* creation of task_rx_event */
   task_rx_eventHandle = osThreadNew(task_rx, NULL, &task_rx_event_attributes);
 
-  /* creation of task_10ms_low */
-  task_10ms_lowHandle = osThreadNew(task_ano_send, NULL, &task_10ms_low_attributes);
+  /* creation of task_ano_send_e */
+  task_ano_send_eHandle = osThreadNew(task_ano_send, NULL, &task_ano_send_e_attributes);
 
-  /* creation of task_1ms_dt */
-  task_1ms_dtHandle = osThreadNew(task_timer_event, NULL, &task_1ms_dt_attributes);
+  /* creation of task_event_name */
+  task_event_nameHandle = osThreadNew(task_event, NULL, &task_event_name_attributes);
 
-  /* creation of task_100ms */
-  task_100msHandle = osThreadNew(task_100ms_fun, NULL, &task_100ms_attributes);
+  /* creation of task_timer_even */
+  task_timer_evenHandle = osThreadNew(task_timer_event, NULL, &task_timer_even_attributes);
 
-  /* creation of task_10ms_high */
-  task_10ms_highHandle = osThreadNew(task_event, NULL, &task_10ms_high_attributes);
+  /* creation of task_10ms_name */
+  task_10ms_nameHandle = osThreadNew(task_10ms, NULL, &task_10ms_name_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -199,22 +199,22 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_task_1ms_fun */
+/* USER CODE BEGIN Header_task_1ms */
 /**
-  * @brief  Function implementing the task_1ms thread.
+  * @brief  Function implementing the task_1ms_name thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_task_1ms_fun */
-__weak void task_1ms_fun(void *argument)
+/* USER CODE END Header_task_1ms */
+__weak void task_1ms(void *argument)
 {
-  /* USER CODE BEGIN task_1ms_fun */
+  /* USER CODE BEGIN task_1ms */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END task_1ms_fun */
+  /* USER CODE END task_1ms */
 }
 
 /* USER CODE BEGIN Header_task_tx */
@@ -253,76 +253,76 @@ __weak void task_rx(void *argument)
   /* USER CODE END task_rx */
 }
 
-/* USER CODE BEGIN Header_task_10ms_low_fun */
+/* USER CODE BEGIN Header_task_ano_send */
 /**
-* @brief Function implementing the task_10ms_low thread.
+* @brief Function implementing the task_ano_send_e thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_task_10ms_low_fun */
+/* USER CODE END Header_task_ano_send */
 __weak void task_ano_send(void *argument)
 {
-  /* USER CODE BEGIN task_10ms_low_fun */
+  /* USER CODE BEGIN task_ano_send */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END task_10ms_low_fun */
+  /* USER CODE END task_ano_send */
 }
 
-/* USER CODE BEGIN Header_task_1ms_dt_fun */
+/* USER CODE BEGIN Header_task_event */
 /**
-* @brief Function implementing the task_1ms_dt thread.
+* @brief Function implementing the task_event_name thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_task_1ms_dt_fun */
-__weak void task_timer_event(void *argument)
-{
-  /* USER CODE BEGIN task_1ms_dt_fun */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END task_1ms_dt_fun */
-}
-
-/* USER CODE BEGIN Header_task_100ms_fun */
-/**
-* @brief Function implementing the task_100ms thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_task_100ms_fun */
-__weak void task_100ms_fun(void *argument)
-{
-  /* USER CODE BEGIN task_100ms_fun */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END task_100ms_fun */
-}
-
-/* USER CODE BEGIN Header_task_10ms_high_fun */
-/**
-* @brief Function implementing the task_10ms_high thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_task_10ms_high_fun */
+/* USER CODE END Header_task_event */
 __weak void task_event(void *argument)
 {
-  /* USER CODE BEGIN task_10ms_high_fun */
+  /* USER CODE BEGIN task_event */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END task_10ms_high_fun */
+  /* USER CODE END task_event */
+}
+
+/* USER CODE BEGIN Header_task_timer_event */
+/**
+* @brief Function implementing the task_timer_even thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_task_timer_event */
+__weak void task_timer_event(void *argument)
+{
+  /* USER CODE BEGIN task_timer_event */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END task_timer_event */
+}
+
+/* USER CODE BEGIN Header_task_10ms */
+/**
+* @brief Function implementing the task_10ms_name thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_task_10ms */
+__weak void task_10ms(void *argument)
+{
+  /* USER CODE BEGIN task_10ms */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END task_10ms */
 }
 
 /* Private application code --------------------------------------------------*/
