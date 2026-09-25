@@ -11,6 +11,8 @@ enum event_id_e
 {
     EVT_NONE,
     EVT_TIMER_10MS,
+    EVT_TIMER_20MS,
+    EVT_TIMER_100MS,
     EVT_TIMER_500MS,
     EVT_TIMER_1000MS,
 };

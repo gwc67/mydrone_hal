@@ -227,7 +227,7 @@ const uart_ops_t uart_ops_dma_it = {
 
 int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
 {
-    if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
+    if (!me) {
         return -EINVAL;
     }
     me->base.name = name;
@@ -247,7 +247,7 @@ int uart_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const ch
 
 int uart_dma_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
 {
-    if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
+    if (!me) {
         return -EINVAL;
     }
     me->base.name = name;
@@ -271,7 +271,7 @@ int uart_dma_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const c
 //dma 发送 it 接受
 int uart_dma_it_init(struct uart_device_t* me,const struct uart_cfg_t* cfg, const char *name)
 {
-    if (!me || !cfg->rx_data || !cfg->tx_data || !cfg->rx_ring_data || !cfg->tx_ring_data) {
+    if (!me ) {
         return -EINVAL;
     }
     me->base.name = name;

@@ -71,7 +71,7 @@ void uart_board_init(void)
         .rx_ring_len32 = RING_RX_LEN,
     };
 
-    uart_it_init(&s_uart_lx, &lx_cfg, "uart_lx");
+    uart_it_init(&s_uart_sbus, &sbus_cfg, "uart_sbus");
     g_uart_sbus = &s_uart_sbus.base;
    
 }

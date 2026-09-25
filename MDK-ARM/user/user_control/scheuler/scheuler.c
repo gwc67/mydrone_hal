@@ -20,8 +20,10 @@ extern QueueHandle_t      ano_tx_queue;
 TaskHandle_t xTimerEventTaskHandle = NULL;
 
 #define NOTIFY_BIT_10MS     (1UL << 0)
-#define NOTIFY_BIT_500MS    (1UL << 1)
-#define NOTIFY_BIT_1000MS   (1UL << 2)
+#define NOTIFY_BIT_20MS     (1UL << 1)
+#define NOTIFY_BIT_100MS    (1UL << 2)
+#define NOTIFY_BIT_500MS    (1UL << 3)
+#define NOTIFY_BIT_1000MS   (1UL << 4)
 
 static void s_timer_callback(TimerHandle_t xTimer)
 {
@@ -34,10 +36,16 @@ static void s_timer_callback(TimerHandle_t xTimer)
 
 void syster_timer_init(void)
 {
+  TimerHandle_t xtimer10ms = xTimerCreate("timer10ms",pdMS_TO_TICKS(10),pdTRUE,(void*)NOTIFY_BIT_10MS,s_timer_callback);
+  TimerHandle_t xtimer20ms = xTimerCreate("timer20ms",pdMS_TO_TICKS(20),pdTRUE,(void*)NOTIFY_BIT_20MS,s_timer_callback);
+  TimerHandle_t xtimer100ms = xTimerCreate("timer100ms",pdMS_TO_TICKS(100),pdTRUE,(void*)NOTIFY_BIT_100MS,s_timer_callback);
   TimerHandle_t xtimer500ms = xTimerCreate("timer500ms",pdMS_TO_TICKS(500),pdTRUE,(void*)NOTIFY_BIT_500MS,s_timer_callback);
   TimerHandle_t xtimer1000ms = xTimerCreate("timer1000ms",pdMS_TO_TICKS(1000),pdTRUE,(void*)NOTIFY_BIT_1000MS,s_timer_callback);
 
   if (xtimer1000ms != NULL || xtimer500ms != NULL) {
+    xTimerStart(xtimer10ms, 0);
+    xTimerStart(xtimer20ms, 0);
+    xTimerStart(xtimer100ms, 0);
     xTimerStart(xtimer500ms, 0);
     xTimerStart(xtimer1000ms, 0);
   }
@@ -47,29 +55,26 @@ void syster_timer_init(void)
 //tasknotify 比 消息队列开销更下
 void task_timer_event(void *argument)
 {
-  struct event_t evt;
   uint32_t NotifyValue;
-
   xTimerEventTaskHandle = xTaskGetCurrentTaskHandle();
 
   for(;;)
   {
     if (xTaskNotifyWait(0x00, 0xFFFFFFFF, &NotifyValue, portMAX_DELAY) == pdTRUE) {
-
       if (NotifyValue & NOTIFY_BIT_10MS ) {
-        evt.id = EVT_TIMER_10MS;
-        evt.prio = EVT_PRIO_LOW;
-        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+        pq_push_simple(g_EventQueue,EVT_TIMER_10MS,EVT_PRIO_HIGH,portMAX_DELAY);
       }
-      if (NotifyValue & NOTIFY_BIT_500MS ) {
-        evt.id = EVT_TIMER_500MS;
-        evt.prio = EVT_PRIO_HIGH;
-        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+      else if (NotifyValue & NOTIFY_BIT_20MS ) {
+        pq_push_simple(g_EventQueue,EVT_TIMER_20MS,EVT_PRIO_NORMAL,portMAX_DELAY);
       }
-      if (NotifyValue & NOTIFY_BIT_1000MS) {
-        evt.id = EVT_TIMER_1000MS;
-        evt.prio = EVT_PRIO_LOW;
-        pq_push(g_EventQueue, &evt, portMAX_DELAY);
+      else if (NotifyValue & NOTIFY_BIT_100MS ) {
+        pq_push_simple(g_EventQueue,EVT_TIMER_100MS,EVT_PRIO_NORMAL,portMAX_DELAY);
+      }
+      else if (NotifyValue & NOTIFY_BIT_500MS ) {
+        pq_push_simple(g_EventQueue,EVT_TIMER_500MS,EVT_PRIO_LOW,portMAX_DELAY);
+      }
+      else if (NotifyValue & NOTIFY_BIT_1000MS) {
+        pq_push_simple(g_EventQueue,EVT_TIMER_1000MS,EVT_PRIO_LOW,portMAX_DELAY);
       }
     }
   }

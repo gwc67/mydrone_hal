@@ -66,7 +66,7 @@ void subs_init(void)
     s_rc_input.fail_safe = 1;// no_signal：是飞控自己统计出来的（1 秒内成功帧数 ≤ 5），属于“软件层面的失联判断”。
     s_rc_input.no_signal = 1;// fail_safe：是接收机硬件层面告知飞控的（通过 SBUS 帧内的标志位），属于“硬件层面的失控通知”。
 }
-DRIVER_INIT_1(subs_init);
+DRIVER_INIT_3(subs_init);
 
 
 

@@ -6,13 +6,10 @@
 #include "lx_fun.h"
 #include "sbus.h"
 #define LX_BAT_TX      0x0d
-#define LX_GPS_TX      0x30
 #define LX_GEN_VEL_TX  0x33
 #define LX_GEN_DIS_TX  0x34
 #define LX_RC_CH_TX    0x40
 #define LX_RT_TAR_TX   0x41
-#define LX_CMD_TX      0xe0
-#define LX_PAR_TX      0xe2
 
 
 #define LX_QUA_RX      0x04
@@ -162,22 +159,24 @@ void lx_receive_anl(uint8_t* data,uint8_t len8)
     }
     
 }
-// uart_transmit(g_uart_com, data, len8);
+
 
 
 void lx_send_buffer(uint8_t* data,uint8_t len8)
 {
-    
+    uart_transmit(g_uart_lx, data, len8);
+    uart_transmit(g_uart_com, data, len8);
 }
 
 static void s_ano_device_lx_init(void)
 {
     ano_register_callback(ANO_HANDEL, lx_receive_anl, lx_add_send_data, lx_send_buffer);
-    
-    // ano_set_send_id(ANO_HANDEL, 0x02,EVT_TIMER_1000MS,2);
-    
-    // ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
-
+    ano_set_send_id(ANO_HANDEL, LX_GEN_VEL_TX,EVT_TIMER_10MS,SUB_PRIO_HIGH3);
+    ano_set_send_id(ANO_HANDEL, LX_GEN_DIS_TX,EVT_TIMER_10MS,SUB_PRIO_HIGH3);
+    ano_set_send_id(ANO_HANDEL, LX_RC_CH_TX,EVT_TIMER_10MS,SUB_PRIO_HIGH2);
+    ano_set_send_id(ANO_HANDEL, LX_RT_TAR_TX,EVT_TIMER_10MS,SUB_PRIO_HIGH3);
+    ano_set_send_id(ANO_HANDEL, LX_BAT_TX,EVT_TIMER_100MS,SUB_PRIO_NORMAL);
+    ano_set_send_id(ANO_HANDEL, 0xe0,EVT_NONE,SUB_PRIO_HIGH1);
 }
 
 DRIVER_INIT_3(s_ano_device_lx_init);

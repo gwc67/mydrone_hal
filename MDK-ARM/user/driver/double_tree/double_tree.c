@@ -87,6 +87,35 @@ PrioQueue_t* pq_create(void)
     return &pq;
 }
 
+BaseType_t pq_push_simple(PrioQueue_t* pq,enum event_id_e id,
+  enum event_prio_e prio,TickType_t timeout)
+{
+
+    if (pq == NULL) {
+        return pdFAIL;
+    }
+    if (xSemaphoreTake(pq->mutuex,timeout) != pdPASS) {
+        return pdFAIL;
+    }
+
+    if (pq->size >= PQ_MAX_CAPACITY) {
+        xSemaphoreGive(pq->mutuex);
+        return errQUEUE_FULL;
+    }
+
+    struct event_t event = {.id = id,.prio = prio};
+
+    pq->heap[pq->size] = event;
+    pq->heap[pq->size].seq = pq->seq_counter++;
+
+    heap_bubble_up(pq, pq->size);
+    pq->size++;
+
+    xSemaphoreGive(pq->mutuex);
+    xSemaphoreGive(pq->sem);
+
+    return pdPASS;
+}
 
 BaseType_t pq_push(PrioQueue_t* pq,const struct event_t* event,TickType_t timeout)
 {
