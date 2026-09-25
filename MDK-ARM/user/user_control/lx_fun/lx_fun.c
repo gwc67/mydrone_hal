@@ -2,12 +2,20 @@
 #include "adc_drv.h"
 #include "pwm/pwm_drv.h"
 #include "ano_math.h"
+#include "ano_device_lx.h"
 //传感器采样，本就应该是定时轮询
 
-// ####################################################################
 
+static struct rt_tar_t s_rt_tar; 
 static struct lx_bat_t s_battary;
 
+void rt_tar_copy(struct rt_tar_t *out)
+{
+    *out = s_rt_tar;
+}
+
+
+// ####################################################################
 void battery_copy(struct lx_bat_t *out)
 {
     *out = s_battary;
@@ -24,12 +32,12 @@ void bat_sample(void)
 void pwm_out_put(void)
 {
     static int16_t ps_pwm[4];
-    struct pwm_t pwm;
+    struct lx_pwm_t pwm;
     //接受的pwm信号是被放大10倍的
-    ps_pwm[0] = pwm_snap.pwm_m1 * 0.2f;
-    ps_pwm[1] = pwm_snap.pwm_m2 * 0.2f;
-    ps_pwm[2] = pwm_snap.pwm_m3 * 0.2f;
-    ps_pwm[3] = pwm_snap.pwm_m4 * 0.2f;
+    ps_pwm[0] = pwm.pwm_m1 * 0.2f;
+    ps_pwm[1] = pwm.pwm_m2 * 0.2f;
+    ps_pwm[2] = pwm.pwm_m3 * 0.2f;
+    ps_pwm[3] = pwm.pwm_m4 * 0.2f;
 
     for (uint8_t i = 0; i < 4; i++)
     {

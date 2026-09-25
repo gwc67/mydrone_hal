@@ -9,6 +9,11 @@ extern QueueHandle_t uart_rx_queue;
 static int s_uart_tx(struct uart_base_t* base,uint8_t *data,uint32_t len32)
 {
     struct uart_device_t *me = CONTAINER_OF(base, struct uart_device_t, base);
+
+
+    if (!me->tx_data) {
+        return -EINVAL;
+    }
     
     ring_buf_put(&me->tx_ring, data, len32);
     

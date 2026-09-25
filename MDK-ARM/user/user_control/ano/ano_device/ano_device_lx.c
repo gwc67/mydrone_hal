@@ -4,6 +4,7 @@
 #include "driver_registry.h"
 #include "uarts.h"
 #include "lx_fun.h"
+#include "sbus.h"
 #define LX_BAT_TX      0x0d
 #define LX_GPS_TX      0x30
 #define LX_GEN_VEL_TX  0x33
@@ -65,35 +66,32 @@ void lx_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
     }
     break;
     case LX_RC_CH_TX: {
-        memcpy(pucTxBuffer + *cnt_ptr, &rc_in_st.rc_ch, 20);
-        *pcnt += 20;
+        struct rc_ch_t snap;
+        sbus_ch_copy(&snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
     }
     break;
     case LX_RT_TAR_TX: 
     {
         struct rt_tar_t snap;
         rt_tar_copy(&snap);
-        memcpy(pucTxBuffer + *pcnt, &snap, sizeof(snap));
-        *pcnt += sizeof(snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
     }
     break;
-    case LX_CMD_TX: {
-        pucTxBuffer[(*pcnt)++] = ano_cmd_cid_get(pstAnobase_Lx);
-        uint8_t cmd_bytes[10];
-        ano_cmd_copy_bytes_s(pstAnobase_Lx, cmd_bytes, 10);
-        memcpy(pucTxBuffer + *pcnt, cmd_bytes, 10);
-        *pcnt += 10;
+    case 0xe0: {
+        struct cmd_t snap;
+        ano_get_cmd(ANO_HANDEL, &snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
     }
     break;
-    case LX_PAR_TX: {
-        // uint16_t par_id = ano_par_id_get(pstAnobase_Lx);
-        // int32_t par_val = ano_par_val_get(pstAnobase_Lx);
-        // pucTxBuffer[(*pcnt)++] = BYTE0(par_id);
-        // pucTxBuffer[(*pcnt)++] = BYTE1(par_id);
-        // pucTxBuffer[(*pcnt)++] = BYTE0(par_val);
-        // pucTxBuffer[(*pcnt)++] = BYTE1(par_val);
-        // pucTxBuffer[(*pcnt)++] = BYTE2(par_val);
-        // pucTxBuffer[(*pcnt)++] = BYTE3(par_val);
+    case 0xe2: {
+        struct par_t snap;
+        ano_get_par(ANO_HANDEL, &snap);
+        memcpy(data + *cnt_ptr, &snap, sizeof(snap));
+        *cnt_ptr += sizeof(snap);
     }
     break;
     default:

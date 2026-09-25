@@ -5,5 +5,5 @@
 
 extern struct uart_base_t* g_uart_com;
 extern struct uart_base_t* g_uart_lx;
-
+extern struct uart_base_t* g_uart_sbus;
 #endif

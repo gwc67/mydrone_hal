@@ -1,6 +1,8 @@
 #ifndef __LX_SENSOR_H
 #define __LX_SENSOR_H
 
+#include "main.h"
+
 struct lx_vel_t
 {
 	int16_t vel_x;
@@ -14,6 +16,13 @@ struct lx_dis_t
     uint16_t angle_100;
     int32_t distance_cm;
 } __attribute__((__packed__));
+
+struct lx_bat_t
+{
+	uint16_t voltage_100;
+	uint16_t current_100;
+} __attribute__((__packed__));
+
 
 void vel_fusion_copy(struct lx_vel_t *out);
 
