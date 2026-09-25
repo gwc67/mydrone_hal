@@ -38,6 +38,8 @@ void com_receive_anl(uint8_t* data,uint8_t len8)
         send2check.sc_uc = check_sum1;
         send2check.ac_uc = check_sum2;
         ano_set_send2check(ANO_HANDEL,&send2check);
+        struct cmd_t temp = {.cid_uc = 1};
+        ano_send_cmd(ANO_HANDEL, &temp);
     }
     else if (*(data + 2) == 0xe1)
     {
@@ -74,6 +76,7 @@ void com_add_send_data(uint8_t frame,uint8_t *cnt_ptr,uint8_t* data)
             memcpy(data + *cnt_ptr, &snap,sizeof(snap));
             *cnt_ptr += sizeof(snap);
         }
+        break;
         default:
             break;
     }
@@ -96,9 +99,9 @@ static void s_ano_device_com_init(void)
     ano_register_callback(ANO_HANDEL, com_receive_anl, com_add_send_data, com_send_buffer);
     
 
-    ano_set_send_id(ANO_HANDEL, 0x02,EVT_TIMER_1000MS,2);
+    ano_set_send_id(ANO_HANDEL, 0xe0,EVT_NONE,2);
     
-    ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
+    // ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
 }
 
 DRIVER_INIT_3(s_ano_device_com_init);

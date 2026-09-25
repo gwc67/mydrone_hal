@@ -105,9 +105,10 @@ static void s_ano_device_lx_init(void)
 {
     ano_register_callback(ANO_HANDEL, lx_receive_anl, lx_add_send_data, lx_send_buffer);
     
-    ano_set_send_id(ANO_HANDEL, 0x02,EVT_TIMER_1000MS,2);
+    // ano_set_send_id(ANO_HANDEL, 0x02,EVT_TIMER_1000MS,2);
     
-    ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
+    // ano_set_send_id(ANO_HANDEL, 0x01,EVT_TIMER_500MS,1);
+
 }
 
 DRIVER_INIT_3(s_ano_device_lx_init);

@@ -14,20 +14,19 @@ static void s_ano_event_callback(enum event_id_e id,uint32_t param,void* user)
     struct ano_event_t* event = (struct ano_event_t*)user;
 
     if (event->frame == 0xe0) {
-        struct ano_device_t* me = CONTAINER_OF(event->me, struct ano_device_t, base);
+        struct ano_device_t* me = CONTAINER_OF(event->me, struct ano_device_t, base);      
         me->frame_pst->check_repeat_st.repeat++;
-
         if (me->frame_pst->check_repeat_st.repeat>= 5) {
-
                me->frame_pst->check_repeat_st.repeat = 0;
                me->frame_pst->check_repeat_st.wait_ck = 0;
-               
                event_desubscribe(me->sub_id);
+               return;
         }
     }
-    
     xQueueSend(ano_tx_queue,(struct ano_event_t*)user,0);
+
 }
+
 
 
 
@@ -61,11 +60,12 @@ static int s_frame_send(struct ano_base_t* base,uint8_t frame)
     tx_buffer[cnt++] = check_sum1;
     tx_buffer[cnt++] = check_sum2;
 
-    if (me->frame_pst->check_repeat_st.wait_ck != 0 && frame == 0xe0) {
+    if (me->frame_pst->check_repeat_st.wait_ck == 0 && frame == 0xe0) {
         me->frame_pst->send2check_st.id_uc = frame;
         me->frame_pst->send2check_st.sc_uc = check_sum1;
         me->frame_pst->send2check_st.ac_uc = check_sum2;
         me->sub_id = event_subscribe(EVT_TIMER_500MS, s_ano_event_callback, &me->frame_pst->ano_event_pst[0xe0],SUB_PRIO_HIGH1);
+        me->frame_pst->check_repeat_st.wait_ck = 1;
     }
 
     CHECKIF(me->send_buffer)
@@ -163,7 +163,10 @@ static int s_set_send_id(struct ano_base_t* base,uint8_t frame,enum event_id_e e
     struct ano_device_t *me = CONTAINER_OF(base,struct ano_device_t,base);
     me->frame_pst->ano_event_pst[frame].me = base;
     me->frame_pst->ano_event_pst[frame].frame = frame;
-    event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
+    if(event_id_e != EVT_NONE)
+    {
+        event_subscribe(event_id_e, s_ano_event_callback,&me->frame_pst->ano_event_pst[frame],prio);
+    }
     return 0;
 }
 
